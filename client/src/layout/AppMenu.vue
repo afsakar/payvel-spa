@@ -42,7 +42,20 @@ const model = ref([
                 separator: true
             },
             { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-            { label: 'Companies', icon: 'pi pi-fw pi-building', to: '/companies'}
+            {
+                label: 'Settings',
+                icon: 'pi pi-fw pi-cog',
+                items: [
+                    { label: 'Companies', to: '/companies' },
+                    { label: 'Taxes', to: '/taxes' },
+                    { label: 'Currencies', to: '/currencies' }
+                ]
+            },
+            {
+                label: 'Accounts',
+                icon: 'pi pi-fw pi-dollar',
+                items: [{ label: 'Account Types', to: '/account-types' }]
+            }
         ]
     }
 ]);

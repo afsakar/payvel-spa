@@ -43,7 +43,6 @@ export const useCompanyStore = defineStore('company', {
             await router.push({ name: 'SelectCompany' });
         },
         async getCompany(id) {
-            this.formErrors = [];
             await this.getToken();
             await axios.get(`/api/v1/companies/${id}`).then((res) => {
                 this.company = res.data;

@@ -136,8 +136,17 @@ class CompanyController extends Controller
      */
     public function destroy(Company $company)
     {
-        $company->delete();
-        return response()->json(['message' => 'Company has been deleted successfully!']);
+        try {
+            $company->delete();
+
+            Log::info('Company ID no: '. $company->id . ', has deleted!');
+
+            return response()->json(['message' => 'Company has been deleted successfully!']);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => $th->getMessage()
+            ], 422);
+        }
     }
 
     /**
@@ -148,6 +157,7 @@ class CompanyController extends Controller
     {
         $company = Company::onlyTrashed()->where('id', $id)->first();
         $company->restore();
+        Log::info('Company ID no: '. $company->id . ', has restored!');
         return response()->json(['message' => 'Company has been restored successfully!']);
     }
 
@@ -162,6 +172,7 @@ class CompanyController extends Controller
             File::delete(public_path($company->logo));
         }
         $company->forceDelete();
+        Log::info('Company ID no: '. $company->id . ', has force deleted!');
         return response()->json(['message' => 'Company has been deleted successfully!']);
     }
 }

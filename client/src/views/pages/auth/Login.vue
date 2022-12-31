@@ -35,7 +35,7 @@ const handleLogin = async () => {
 
                     <div class="field mb-5">
                         <label for="password" class="block text-900 font-medium text-xl">Password</label>
-                        <Password id="password" v-model="form.password" placeholder="Password" :toggleMask="true" class="w-full" inputClass="w-full" inputStyle="padding:1rem"></Password>
+                        <Password id="password" v-model="form.password" placeholder="Password" :feedback="false" :toggleMask="true" class="w-full" inputClass="w-full" inputStyle="padding:1rem"></Password>
                         <span v-if="auth.errors.password" id="password" class="block p-error">{{ auth.errors.password[0] }}</span>
                     </div>
 

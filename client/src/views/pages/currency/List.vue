@@ -1,11 +1,10 @@
 <script setup>
-import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import { useCurrencyStore } from '@/composables/currencies';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import { useCompanyStore } from '@/composables/company';
-import Create from '@/views/pages/company/CreateEditModal.vue';
+import Create from '@/views/pages/currency/CreateEditModal.vue';
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
@@ -13,43 +12,46 @@ const filters = ref({
 
 const toast = useToast();
 const confirm = useConfirm();
-const companyStore = useCompanyStore();
-const selectedCompany = JSON.parse(localStorage.getItem('selectedCompany'));
+const currencyStore = useCurrencyStore();
 const currentList = ref(null);
-const companyList = ref([]);
-const deletedCompanyList = ref([]);
-const editedCompany = ref({});
+const currencyList = ref([]);
+const deletedCurrencyList = ref([]);
+const editedCurrency = ref({});
 const isEdit = ref(false);
 const loading = ref(false);
+const isDeletedList = ref(false);
+const showModal = ref(false);
 
 onMounted(async () => {
     loading.value = true;
-    await companyStore.getCompanies();
-    companyList.value = companyStore.companyList.data;
-    deletedCompanyList.value = companyStore.deletedCompanies;
-    currentList.value = companyList.value;
+    await currencyStore.getCurrencies();
+    currencyList.value = currencyStore.currencyList.data;
+    deletedCurrencyList.value = currencyStore.deletedCurrencies;
+    currentList.value = currencyList.value;
     loading.value = false;
 });
 
-const showModal = ref(false);
+function changeList() {
+    isDeletedList.value = !isDeletedList.value;
+    if (!isDeletedList.value) {
+        currentList.value = currencyList.value;
+    } else {
+        currentList.value = deletedCurrencyList.value;
+    }
+}
 function toggleModal() {
-    editedCompany.value = {};
+    editedCurrency.value = {};
     isEdit.value = false;
     showModal.value = !showModal.value;
 }
-
-function separateNumber(number) {
-    return number.toString().replace(/(\d\d\d)(?=(\d\d))/g, '$1 ');
+function newCurrency(currency) {
+    currencyList.value.push(currency);
 }
 
-function newCompany(company) {
-    companyList.value.push(company);
-}
-
-function toggleEditModal(company) {
+function toggleEditModal(currency) {
     loading.value = true;
-    companyStore.getCompany(company).then(() => {
-        editedCompany.value = companyStore.company.data;
+    currencyStore.getCurrency(currency).then(() => {
+        editedCurrency.value = currencyStore.currency.data;
         isEdit.value = true;
         showModal.value = !showModal.value;
         loading.value = false;
@@ -60,8 +62,8 @@ function deleteItem(event, id) {
         message: 'Are you sure you want to proceed?',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-            companyStore.deleteCompany(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Company deleted successfully!', life: 3000 });
+            currencyStore.deleteCurrency(id).then(() => {
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Currency deleted successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -75,8 +77,8 @@ function forceDeleteItem(event, id) {
         message: 'Are you sure? You can not undo this action!',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-            companyStore.forceDeleteCompany(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Company deleted successfully!', life: 3000 });
+            currencyStore.forceDeleteCurrency(id).then(() => {
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Currency deleted successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -86,35 +88,26 @@ function forceDeleteItem(event, id) {
 }
 
 function restoreItem(id) {
-    companyStore.restoreCompany(id).then(() => {
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Company restored successfully!', life: 3000 });
+    currencyStore.restoreCurrency(id).then(() => {
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Currency restored successfully!', life: 3000 });
         setTimeout(() => {
             window.location.reload();
         }, 2000);
     });
-}
-
-const isDeletedList = ref(false);
-function changeList() {
-    isDeletedList.value = !isDeletedList.value;
-    if (!isDeletedList.value) {
-        currentList.value = companyList.value;
-    } else {
-        currentList.value = deletedCompanyList.value;
-    }
 }
 </script>
 
 <template>
     <Toolbar class="col-12 my-3">
         <template #start>
-            <p class="text-xl font-bold">Companies</p>
+            <p class="text-xl font-bold">Currencies</p>
         </template>
 
         <template #end>
             <Button label="New" icon="pi pi-plus" class="mr-2 p-button-success" @click="toggleModal" />
         </template>
     </Toolbar>
+
     <div class="card">
         <DataTable
             :loading="loading"
@@ -144,31 +137,7 @@ function changeList() {
                     </div>
                 </div>
             </template>
-            <Column header="Logo">
-                <template #body="slotProps">
-                    <img v-if="slotProps.data.logo" :src="axios.defaults.baseURL + slotProps.data.logo" :alt="slotProps.data.name" class="w-6rem" />
-                </template>
-            </Column>
-            <Column field="name" header="Name" :sortable="true"></Column>
-            <Column field="tel_number" header="Tel Number">
-                <template #body="slotProps">
-                    <span>{{ separateNumber(slotProps.data.tel_number) }}</span>
-                </template>
-            </Column>
-            <Column field="email" header="Email" :sortable="true"></Column>
-            <Column field="tax_number" header="ID number/Tax number" :sortable="true"></Column>
-            <Column header="" width="100" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center">
-                <template #body="slotProps">
-                    <div v-if="slotProps.data.deleted_at === null">
-                        <Button icon="pi pi-pencil" class="p-button-warning p-button-text" @click="toggleEditModal(slotProps.data.id)" />
-                        <Button :disabled="slotProps.data.id === selectedCompany.id" icon="pi pi-trash" class="p-button-danger p-button-text" @click="deleteItem($event, slotProps.data.id)" />
-                    </div>
-                    <div v-else>
-                        <Button icon="pi pi-refresh" class="p-button-success p-button-text" @click="restoreItem(slotProps.data.id)" />
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="forceDeleteItem($event, slotProps.data.id)" />
-                    </div>
-                </template>
-            </Column>
+
             <template #empty>
                 <div class="text-lg text-primary-400 py-3 flex align-items-center justify-content-center">
                     <div class="flex align-items-center between gap-2">
@@ -177,19 +146,36 @@ function changeList() {
                     </div>
                 </div>
             </template>
+
+            <Column>
+                <template #body="slotProps">
+                    <div :class="`currency-flag currency-flag-${slotProps.data.code.toLowerCase()}`"></div>
+                </template>
+            </Column>
+            <Column field="name" header="Name" :sortable="true"></Column>
+            <Column field="code" header="Code" :sortable="true"></Column>
+            <Column field="symbol" header="Symbol"></Column>
+            <Column field="position" header="Position">
+                <template #body="slotProps">
+                    <span v-if="slotProps.data.position === 'after'">After</span>
+                    <span v-else>Before</span>
+                </template>
+            </Column>
+            <Column header="" width="100" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center">
+                <template #body="slotProps">
+                    <div v-if="slotProps.data.deleted_at === null">
+                        <Button icon="pi pi-pencil" class="p-button-warning p-button-text" @click="toggleEditModal(slotProps.data.id)" />
+                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="deleteItem($event, slotProps.data.id)" />
+                    </div>
+                    <div v-else>
+                        <Button icon="pi pi-refresh" class="p-button-success p-button-text" @click="restoreItem(slotProps.data.id)" />
+                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="forceDeleteItem($event, slotProps.data.id)" />
+                    </div>
+                </template>
+            </Column>
         </DataTable>
+        <Dialog :modal="true" header="Create Currency" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
+            <Create @toggleModal="toggleModal" @newCurrency="newCurrency" :currency="editedCurrency" :is-edit="isEdit" />
+        </Dialog>
     </div>
-    <Dialog :modal="true" header="Create Company" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
-        <Create @toggleModal="toggleModal" @newCompany="newCompany" :company="editedCompany" :is-edit="isEdit" />
-    </Dialog>
 </template>
-
-<style>
-.p-paginator-bottom {
-    @apply mt-4;
-}
-
-.p-datatable-header {
-    border: none !important;
-}
-</style>

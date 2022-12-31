@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue';
 import { useCompanyStore } from '@/composables/company';
 import { useLayout } from '@/layout/composables/layout';
-import { defineEmits } from 'vue'
 import axios from 'axios';
 import { useToast } from 'primevue/usetoast';
 
@@ -18,6 +17,7 @@ const props = defineProps({
         default: false
     }
 });
+
 const company = useCompanyStore();
 const toast = useToast();
 const formData = ref(new FormData());
@@ -51,7 +51,6 @@ const form = ref({
     tax_office: props.isEdit && props.company.tax_office !== null ? props.company.tax_office : '',
     tax_number: props.isEdit && props.company.tax_number !== null ? props.company.tax_number : ''
 });
-
 
 const changePreview = (event) => {
     const file = event.target.files[0];

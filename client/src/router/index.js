@@ -31,11 +31,36 @@ const router = createRouter({
                             name: 'companies.index',
                             path: '/companies',
                             component: () => import('@/views/pages/company/List.vue')
-                        },
+                        }
+                    ]
+                },
+                {
+                    path: '/currencies',
+                    children: [
                         {
-                            name: 'companies.create',
-                            path: 'create',
-                            component: () => import('@/views/pages/company/CreateEditModal.vue')
+                            name: 'currencies.index',
+                            path: '/currencies',
+                            component: () => import('@/views/pages/currency/List.vue')
+                        }
+                    ]
+                },
+                {
+                    path: '/account-types',
+                    children: [
+                        {
+                            name: 'accountTypes.index',
+                            path: '/account-types',
+                            component: () => import('@/views/pages/accountType/List.vue')
+                        }
+                    ]
+                },
+                {
+                    path: '/taxes',
+                    children: [
+                        {
+                            name: 'taxes.index',
+                            path: '/taxes',
+                            component: () => import('@/views/pages/tax/List.vue')
                         }
                     ]
                 }

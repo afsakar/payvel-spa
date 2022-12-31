@@ -38,17 +38,10 @@ onBeforeUnmount(() => {
     unbindOutsideClickListener();
 });
 
-const logoUrl = computed(() => {
-    return `${contextPath}layout/images/logo-white.svg`;
-});
-
 const onTopBarMenuButton = () => {
     topbarMenuActive.value = !topbarMenuActive.value;
 };
-const onSettingsClick = () => {
-    topbarMenuActive.value = false;
-    router.push('/documentation');
-};
+
 const topbarMenuClasses = computed(() => {
     return {
         'layout-topbar-menu-mobile-active': topbarMenuActive.value

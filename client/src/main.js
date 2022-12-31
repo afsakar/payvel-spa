@@ -111,9 +111,9 @@ import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
 
 import '@/assets/styles.scss';
+import 'currency-flags/dist/currency-flags.min.css';
 
 const app = createApp(App);
-
 pinia.use(({ store }) => {
     store.router = markRaw(router);
 });

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CompanyController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,4 +19,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
-require ('modules/company.php');
+//require ('modules/company.php');
+//require ('modules/currency.php');
+
+foreach (File::allFiles(__DIR__ . '/modules') as $partial) {
+    require_once $partial->getPathname();
+}

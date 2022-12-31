@@ -8,7 +8,7 @@ export const useAuthStore = defineStore('auth', {
         authUser: null,
         authErrors: [],
         authSuccess: null,
-        authToken: useStorage('authToken', null),
+        authToken: useStorage('authToken', null)
     }),
     getters: {
         user: (state) => state.authUser,
@@ -56,16 +56,21 @@ export const useAuthStore = defineStore('auth', {
         // },
         async getUser() {
             await this.getToken();
-            await axios.get('/api/user').then((res) => {
-                if (res.status === 401) {
-                    this.authUser = null;
-                    localStorage.removeItem('isLoggedIn');
-                    localStorage.removeItem('selectedCompany');
-                    router.push('/login');
-                } else {
+            await axios
+                .get('/api/user')
+                .then((res) => {
                     this.authUser = res.data;
-                }
-            });
+                })
+                .catch((err) => {
+                    if (err.response.status === 401) {
+                        this.authUser = null;
+                        localStorage.removeItem('isLoggedIn');
+                        localStorage.removeItem('selectedCompany');
+                        router.push('/login');
+                    } else {
+                        console.log(err);
+                    }
+                });
         },
         async logout() {
             await axios.post('/logout').then(() => {
