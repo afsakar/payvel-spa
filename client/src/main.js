@@ -117,7 +117,7 @@ const app = createApp(App);
 pinia.use(({ store }) => {
     store.router = markRaw(router);
 });
-pinia.use(piniaPluginPersistedstate)
+pinia.use(piniaPluginPersistedstate);
 
 app.use(router);
 app.use(PrimeVue, { ripple: true });

@@ -150,7 +150,7 @@ class CurrencyController extends Controller
 
             Log::info('Currency ID no: '. $currency->id . ', has force deleted!');
 
-            return response()->json(['message' => 'Company has been deleted successfully!']);
+            return response()->json(['message' => 'Currency has been deleted successfully!']);
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage()

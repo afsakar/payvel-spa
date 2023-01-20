@@ -106,18 +106,18 @@ class CompanyController extends Controller
                     $image = '/images/company-logos/' . $imageName;
                     $company->logo = $image;
                 }
-                    $company->name = $request->name;
-                    $company->owner = $request->owner;
-                    $company->tel_number = $request->tel_number;
-                    $company->gsm_number = $request->gsm_number;
-                    $company->fax_number = $request->fax_number;
-                    $company->email = $request->email;
-                    $company->address = $request->address;
-                    $company->tax_office = $request->tax_office;
-                    $company->tax_number = $request->tax_number;
-                    $company->save();
+                $company->name = $request->name;
+                $company->owner = $request->owner;
+                $company->tel_number = $request->tel_number;
+                $company->gsm_number = $request->gsm_number;
+                $company->fax_number = $request->fax_number;
+                $company->email = $request->email;
+                $company->address = $request->address;
+                $company->tax_office = $request->tax_office;
+                $company->tax_number = $request->tax_number;
+                $company->save();
 
-                Log::info('Company ID no: '. $company->id . ', has updated!');
+                Log::info('Company ID no: ' . $company->id . ', has updated!');
 
                 return response()->json(['message' => 'Company has been updated successfully!']);
             });
@@ -139,7 +139,7 @@ class CompanyController extends Controller
         try {
             $company->delete();
 
-            Log::info('Company ID no: '. $company->id . ', has deleted!');
+            Log::info('Company ID no: ' . $company->id . ', has deleted!');
 
             return response()->json(['message' => 'Company has been deleted successfully!']);
         } catch (\Throwable $th) {
@@ -157,7 +157,7 @@ class CompanyController extends Controller
     {
         $company = Company::onlyTrashed()->where('id', $id)->first();
         $company->restore();
-        Log::info('Company ID no: '. $company->id . ', has restored!');
+        Log::info('Company ID no: ' . $company->id . ', has restored!');
         return response()->json(['message' => 'Company has been restored successfully!']);
     }
 
@@ -168,11 +168,11 @@ class CompanyController extends Controller
     public function forceDelete($id)
     {
         $company = Company::onlyTrashed()->where('id', $id)->first();
-        if($company->logo !== null) {
+        if ($company->logo !== null) {
             File::delete(public_path($company->logo));
         }
         $company->forceDelete();
-        Log::info('Company ID no: '. $company->id . ', has force deleted!');
+        Log::info('Company ID no: ' . $company->id . ', has force deleted!');
         return response()->json(['message' => 'Company has been deleted successfully!']);
     }
 }

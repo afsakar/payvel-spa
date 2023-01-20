@@ -13,10 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('taxes', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('account_type_id');
+            $table->unsignedBigInteger('currency_id');
             $table->string('name')->unique();
-            $table->integer('rate');
+            $table->string('description')->nullable();
+            $table->decimal('balance', 15, 2)->default(0);
+            $table->foreign('account_type_id')->references('id')->on('account_types')->onDelete(null);
+            $table->foreign('currency_id')->references('id')->on('currencies')->onDelete(null);
             $table->softDeletes();
             $table->timestamps();
         });
@@ -29,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('taxes');
+        Schema::dropIfExists('accounts');
     }
 };

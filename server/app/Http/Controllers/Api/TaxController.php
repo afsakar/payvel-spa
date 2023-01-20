@@ -7,6 +7,7 @@ use App\Http\Requests\Tax\TaxStoreRequest;
 use App\Http\Requests\Tax\TaxUpdateRequest;
 use App\Http\Resources\TaxResource;
 use App\Models\Tax;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -54,7 +55,7 @@ class TaxController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Tax  $tax
+     * @param Tax $tax
      * @return TaxResource
      */
     public function show(Tax $tax)
@@ -66,7 +67,7 @@ class TaxController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Tax  $tax
+     * @param Tax $tax
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(TaxUpdateRequest $request, Tax $tax)
@@ -89,7 +90,7 @@ class TaxController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Tax  $tax
+     * @param Tax $tax
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(Tax $tax)
@@ -110,7 +111,7 @@ class TaxController extends Controller
     /**
      * Restore the specified resource from storage.
      *
-     * @param  \App\Models\Tax  $tax
+     * @param Tax $tax
      * @return \Illuminate\Http\JsonResponse
      */
     public function restore($id)
@@ -124,12 +125,13 @@ class TaxController extends Controller
     /**
      * Force Delete the specified resource from storage.
      *
-     * @param  \App\Models\Tax  $tax
-     * @return \Illuminate\Http\JsonResponse
+     * @param $id
+     * @return JsonResponse
      */
-    public function forceDelete(Tax $tax)
+    public function forceDelete($id)
     {
         try {
+            $tax = Tax::onlyTrashed()->where('id', $id)->first();
             $tax->forceDelete();
 
             Log::info('Tax ID no: '. $tax->id . ', has force deleted!');

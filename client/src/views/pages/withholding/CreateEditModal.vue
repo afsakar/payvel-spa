@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { useTaxStore } from '@/composables/tax';
+import { useWithholdingStore } from '@/composables/withholding';
 
 const props = defineProps({
-    tax: {
+    withholding: {
         type: Object,
         required: true,
         default: () => ({})
@@ -16,7 +16,7 @@ const props = defineProps({
     }
 });
 
-const tax = useTaxStore();
+const withholding = useWithholdingStore();
 const toast = useToast();
 const formData = ref(new FormData());
 const emit = defineEmits(['toggleModal']);
@@ -28,8 +28,8 @@ function toggleModal() {
 }
 
 const form = ref({
-    name: props.isEdit && props.tax.name !== null ? props.tax.name : '',
-    rate: props.isEdit && props.tax.rate !== null ? props.tax.rate : ''
+    name: props.isEdit && props.withholding.name !== null ? props.withholding.name : '',
+    rate: props.isEdit && props.withholding.rate !== null ? props.withholding.rate : ''
 });
 
 const submit = async () => {
@@ -37,23 +37,23 @@ const submit = async () => {
     formData.value.append('rate', form.value.rate);
     if (props.isEdit) {
         formData.value.append('_method', 'PUT');
-        await tax.updateTax(formData.value, props.tax.id).then(() => {
+        await withholding.updateWithholding(formData.value, props.withholding.id).then(() => {
             formData.value = new FormData();
-            if (tax.respStatus) {
+            if (withholding.respStatus) {
                 toggleModal();
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Tax updated successfully!', life: 3000 });
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding updated successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
             }
         });
     } else {
-        await tax.createTax(formData.value).then(() => {
+        await withholding.createWithholding(formData.value).then(() => {
             formData.value = new FormData();
-            if (tax.respStatus) {
+            if (withholding.respStatus) {
                 toggleModal();
-                emit('newTax', form.value);
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Tax created successfully!', life: 3000 });
+                emit('newWithholding', form.value);
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -68,13 +68,13 @@ const submit = async () => {
         <div class="field col-12 m-0">
             <label>Name</label>
             <InputText class="w-full" placeholder="Name" v-model="form.name" />
-            <span v-if="tax.errors.name" id="name" class="block p-error">{{ tax.errors.name[0] }}</span>
+            <span v-if="withholding.errors.name" id="name" class="block p-error">{{ withholding.errors.name[0] }}</span>
         </div>
 
         <div class="field col-12 m-0">
             <label>Rate</label>
             <InputText class="w-full" placeholder="Rate" v-model="form.rate" />
-            <span v-if="tax.errors.rate" id="symbol" class="block p-error">{{ tax.errors.rate[0] }}</span>
+            <span v-if="withholding.errors.rate" id="symbol" class="block p-error">{{ withholding.errors.rate[0] }}</span>
         </div>
 
         <Button type="submit" label="Submit" class="w-full p-3 text-lg bg-primary hover:bg-primary-600 mt-2 mx-3"></Button>

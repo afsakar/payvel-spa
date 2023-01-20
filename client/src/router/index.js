@@ -55,12 +55,32 @@ const router = createRouter({
                     ]
                 },
                 {
+                    path: '/accounts',
+                    children: [
+                        {
+                            name: 'accounts.index',
+                            path: '/accounts',
+                            component: () => import('@/views/pages/account/List.vue')
+                        }
+                    ]
+                },
+                {
                     path: '/taxes',
                     children: [
                         {
                             name: 'taxes.index',
                             path: '/taxes',
                             component: () => import('@/views/pages/tax/List.vue')
+                        }
+                    ]
+                },
+                {
+                    path: '/withholdings',
+                    children: [
+                        {
+                            name: 'withholdings.index',
+                            path: '/withholdings',
+                            component: () => import('@/views/pages/withholding/List.vue')
                         }
                     ]
                 }
