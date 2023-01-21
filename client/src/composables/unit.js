@@ -1,18 +1,18 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-export const useTaxStore = defineStore('tax', {
+export const useUnitStore = defineStore('unit', {
     state: () => ({
-        taxes: null,
-        deletedTaxes: null,
-        tax: null,
+        units: null,
+        deletedUnits: null,
+        unit: null,
         formErrors: [],
         formSuccess: null,
         respStatus: null
     }),
     getters: {
-        taxList: (state) => state.taxes,
-        deletedTaxList: (state) => state.deletedTaxes,
+        unitList: (state) => state.units,
+        deletedUnitList: (state) => state.deletedUnits,
         successMessage: (state) => state.formSuccess,
         errors: (state) => state.formErrors
     },
@@ -20,30 +20,30 @@ export const useTaxStore = defineStore('tax', {
         async getToken() {
             await axios.get('/sanctum/csrf-cookie');
         },
-        async getTaxes() {
+        async getUnits() {
             await this.getToken();
-            await axios.get('/api/v1/taxes').then((res) => {
-                this.taxes = res.data;
-                this.deletedTaxes = res.data.deletedTaxes;
+            await axios.get('/api/v1/units').then((res) => {
+                this.units = res.data;
+                this.deletedUnits = res.data.deletedUnits;
             });
         },
-        async getTax(id) {
+        async getUnit(id) {
             await this.getToken();
-            await axios.get(`/api/v1/taxes/${id}`).then((res) => {
-                this.tax = res.data;
+            await axios.get(`/api/v1/units/${id}`).then((res) => {
+                this.unit = res.data;
             });
         },
-        async createTax(data) {
+        async createUnit(data) {
             this.formErrors = [];
             await this.getToken();
             await axios
-                .post('/api/v1/taxes', data)
+                .post('/api/v1/units', data)
                 .then((res) => {
                     if (res.status === 422) {
                         this.formErrors = res.data.errors;
                     }
-                    this.formSuccess = 'Tax created successfully';
-                    this.getTaxes();
+                    this.formSuccess = 'Unit created successfully';
+                    this.getUnits();
                     this.respStatus = true;
                 })
                 .catch((err) => {
@@ -52,17 +52,17 @@ export const useTaxStore = defineStore('tax', {
                     }
                 });
         },
-        async updateTax(data, id) {
+        async updateUnit(data, id) {
             this.formErrors = [];
             await this.getToken();
             await axios
-                .post(`/api/v1/taxes/${id}`, data)
+                .post(`/api/v1/units/${id}`, data)
                 .then((res) => {
                     if (res.status === 422) {
                         this.formErrors = res.data.errors;
                     }
-                    this.formSuccess = 'Tax updated successfully';
-                    this.getTaxes();
+                    this.formSuccess = 'Unit updated successfully';
+                    this.getUnits();
                     this.respStatus = true;
                 })
                 .catch((err) => {
@@ -71,27 +71,27 @@ export const useTaxStore = defineStore('tax', {
                     }
                 });
         },
-        async deleteTax(id) {
+        async deleteUnit(id) {
             await this.getToken();
-            await axios.delete(`/api/v1/taxes/${id}`).then((res) => {
+            await axios.delete(`/api/v1/units/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
-                this.getTaxes();
+                this.getUnits();
                 this.respStatus = true;
             });
         },
-        async restoreTax(id) {
+        async restoreUnit(id) {
             await this.getToken();
-            await axios.post(`/api/v1/taxes/restore/${id}`).then((res) => {
+            await axios.post(`/api/v1/units/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
-                this.getTaxes();
+                this.getUnits();
                 this.respStatus = true;
             });
         },
-        async forceDeleteTax(id) {
+        async forceDeleteUnit(id) {
             await this.getToken();
-            await axios.delete(`/api/v1/taxes/force-delete/${id}`).then((res) => {
+            await axios.delete(`/api/v1/units/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
-                this.getTaxes();
+                this.getUnits();
                 this.respStatus = true;
             });
         }

@@ -24,7 +24,7 @@ const showModal = ref(false);
 const selectedCurrency = ref({
     name: '',
     code: 'TRY',
-    symbol: '',
+    symbol: '₺',
     position: 'after'
 });
 
@@ -119,8 +119,8 @@ function changeCurrency(e) {
                 placeholder="Balance"
                 v-model="form.balance"
                 :currency="selectedCurrency.code"
-                :prefix="selectedCurrency.position === 'after' ? selectedCurrency.symbol + ' ' : ''"
-                :suffix="selectedCurrency.position === 'before' ? ' ' + selectedCurrency.symbol : ''"
+                :prefix="selectedCurrency.position === 'before' ? selectedCurrency.symbol + ' ' : ''"
+                :suffix="selectedCurrency.position === 'after' ? ' ' + selectedCurrency.symbol : ''"
             />
             <span v-if="account.errors.balance" id="balance" class="block p-error">{{ account.errors.balance[0] }}</span>
         </div>

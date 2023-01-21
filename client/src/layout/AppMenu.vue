@@ -42,11 +42,14 @@ const model = ref([
                 separator: true
             },
             { label: 'Dashboard', icon: 'ti pi-fw ti-home', to: '/' },
-            { label: 'Currencies', icon: 'ti pi-fw ti-currency-dollar', to: '/currencies' },
+            { label: 'Companies', icon: 'ti pi-fw ti-building', to: '/companies' },
             {
                 label: 'Settings',
                 icon: 'ti pi-fw ti-settings',
-                items: [{ label: 'Currencies', to: '/currencies' }]
+                items: [
+                    { label: 'Currencies', to: '/currencies' },
+                    { label: 'Units', to: '/units' }
+                ]
             },
             {
                 label: 'Taxes',
@@ -63,7 +66,8 @@ const model = ref([
                     { label: 'Account Types', to: '/account-types' },
                     { label: 'Accounts', to: '/accounts' }
                 ]
-            }
+            },
+            { label: 'Corporations', icon: 'ti pi-fw ti-building-skyscraper', to: '/corporations' }
         ]
     }
 ]);

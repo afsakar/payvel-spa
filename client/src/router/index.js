@@ -83,6 +83,26 @@ const router = createRouter({
                             component: () => import('@/views/pages/withholding/List.vue')
                         }
                     ]
+                },
+                {
+                    path: '/units',
+                    children: [
+                        {
+                            name: 'units.index',
+                            path: '/units',
+                            component: () => import('@/views/pages/unit/List.vue')
+                        }
+                    ]
+                },
+                {
+                    path: '/corporations',
+                    children: [
+                        {
+                            name: 'corporations.index',
+                            path: '/corporations',
+                            component: () => import('@/views/pages/corporation/List.vue')
+                        }
+                    ]
                 }
             ],
             meta: {

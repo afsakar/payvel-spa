@@ -1,18 +1,20 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-export const useTaxStore = defineStore('tax', {
+export const useCorporationStore = defineStore('corporation', {
     state: () => ({
-        taxes: null,
-        deletedTaxes: null,
-        tax: null,
+        corporations: null,
+        deletedCorporations: null,
+        corporation: null,
+        currencies: null,
         formErrors: [],
         formSuccess: null,
         respStatus: null
     }),
     getters: {
-        taxList: (state) => state.taxes,
-        deletedTaxList: (state) => state.deletedTaxes,
+        corporationList: (state) => state.corporations,
+        deletedCorporationList: (state) => state.deletedCorporations,
+        currenciesList: (state) => state.currencies,
         successMessage: (state) => state.formSuccess,
         errors: (state) => state.formErrors
     },
@@ -20,30 +22,30 @@ export const useTaxStore = defineStore('tax', {
         async getToken() {
             await axios.get('/sanctum/csrf-cookie');
         },
-        async getTaxes() {
+        async getCorporations() {
             await this.getToken();
-            await axios.get('/api/v1/taxes').then((res) => {
-                this.taxes = res.data;
-                this.deletedTaxes = res.data.deletedTaxes;
+            await axios.get('/api/v1/corporations').then((res) => {
+                this.corporations = res.data;
+                this.deletedCorporations = res.data.deleted_corporations;
             });
         },
-        async getTax(id) {
+        async getCorporation(id) {
             await this.getToken();
-            await axios.get(`/api/v1/taxes/${id}`).then((res) => {
-                this.tax = res.data;
+            await axios.get(`/api/v1/corporations/${id}`).then((res) => {
+                this.corporation = res.data;
             });
         },
-        async createTax(data) {
+        async createCorporation(data) {
             this.formErrors = [];
             await this.getToken();
             await axios
-                .post('/api/v1/taxes', data)
+                .post('/api/v1/corporations', data)
                 .then((res) => {
                     if (res.status === 422) {
                         this.formErrors = res.data.errors;
                     }
-                    this.formSuccess = 'Tax created successfully';
-                    this.getTaxes();
+                    this.formSuccess = 'Corporation created successfully';
+                    this.getCorporations();
                     this.respStatus = true;
                 })
                 .catch((err) => {
@@ -52,17 +54,17 @@ export const useTaxStore = defineStore('tax', {
                     }
                 });
         },
-        async updateTax(data, id) {
+        async updateCorporation(data, id) {
             this.formErrors = [];
             await this.getToken();
             await axios
-                .post(`/api/v1/taxes/${id}`, data)
+                .post(`/api/v1/corporations/${id}`, data)
                 .then((res) => {
                     if (res.status === 422) {
                         this.formErrors = res.data.errors;
                     }
-                    this.formSuccess = 'Tax updated successfully';
-                    this.getTaxes();
+                    this.formSuccess = 'Corporation updated successfully';
+                    this.getCorporations();
                     this.respStatus = true;
                 })
                 .catch((err) => {
@@ -71,28 +73,34 @@ export const useTaxStore = defineStore('tax', {
                     }
                 });
         },
-        async deleteTax(id) {
+        async deleteCorporation(id) {
             await this.getToken();
-            await axios.delete(`/api/v1/taxes/${id}`).then((res) => {
+            await axios.delete(`/api/v1/corporations/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
-                this.getTaxes();
+                this.getCorporations();
                 this.respStatus = true;
             });
         },
-        async restoreTax(id) {
+        async restoreCorporation(id) {
             await this.getToken();
-            await axios.post(`/api/v1/taxes/restore/${id}`).then((res) => {
+            await axios.post(`/api/v1/corporations/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
-                this.getTaxes();
+                this.getCorporations();
                 this.respStatus = true;
             });
         },
-        async forceDeleteTax(id) {
+        async forceDeleteCorporation(id) {
             await this.getToken();
-            await axios.delete(`/api/v1/taxes/force-delete/${id}`).then((res) => {
+            await axios.delete(`/api/v1/corporations/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
-                this.getTaxes();
+                this.getCorporations();
                 this.respStatus = true;
+            });
+        },
+        async getCurrencies() {
+            await this.getToken();
+            await axios.get('/api/v1/currencies').then((res) => {
+                this.currencies = res.data.data;
             });
         }
     }
