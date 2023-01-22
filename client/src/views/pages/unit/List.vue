@@ -5,6 +5,11 @@ import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import Create from '@/views/pages/unit/CreateEditModal.vue';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: 'Unit List'
+});
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
@@ -162,7 +167,7 @@ function forceDeleteItem(event, id) {
                 </template>
             </Column>
         </DataTable>
-        <Dialog :modal="true" header="Create Currency" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
+        <Dialog :modal="true" header="Create Unit" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
             <Create @toggleModal="toggleModal" @newUnit="newUnit" :unit="editedUnit" :is-edit="isEdit" />
         </Dialog>
     </div>

@@ -103,6 +103,26 @@ const router = createRouter({
                             component: () => import('@/views/pages/corporation/List.vue')
                         }
                     ]
+                },
+                {
+                    path: '/categories',
+                    children: [
+                        {
+                            name: 'categories.index',
+                            path: '/categories',
+                            component: () => import('@/views/pages/category/List.vue')
+                        }
+                    ]
+                },
+                {
+                    path: '/materials',
+                    children: [
+                        {
+                            name: 'materials.index',
+                            path: '/materials',
+                            component: () => import('@/views/pages/material/List.vue')
+                        }
+                    ]
                 }
             ],
             meta: {

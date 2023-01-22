@@ -2,6 +2,11 @@
 import { useLayout } from '@/layout/composables/layout';
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/composables/auth';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: 'Login'
+});
 
 const auth = useAuthStore();
 

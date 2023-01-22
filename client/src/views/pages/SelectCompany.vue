@@ -2,6 +2,11 @@
 import { useLayout } from '@/layout/composables/layout';
 import { ref, computed, onMounted } from 'vue';
 import { useCompanyStore } from '@/composables/company';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: 'Select Company'
+});
 
 const { contextPath } = useLayout();
 const selectedCompany = ref(null);

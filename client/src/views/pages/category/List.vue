@@ -1,14 +1,14 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useWithholdingStore } from '@/composables/withholding';
+import { useCategoryStore } from '@/composables/category';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import Create from '@/views/pages/withholding/CreateEditModal.vue';
+import Create from '@/views/pages/category/CreateEditModal.vue';
 import { useHead } from '@unhead/vue';
 
 useHead({
-    title: 'Withholding List'
+    title: 'Category List'
 });
 
 const filters = ref({
@@ -17,11 +17,11 @@ const filters = ref({
 
 const toast = useToast();
 const confirm = useConfirm();
-const withholdingStore = useWithholdingStore();
+const categoryStore = useCategoryStore();
 const currentList = ref(null);
-const withholdingList = ref([]);
-const deletedWithholdingList = ref([]);
-const editedWithholding = ref({});
+const categoryList = ref([]);
+const deletedCategoryList = ref([]);
+const editedCategory = ref({});
 const isEdit = ref(false);
 const loading = ref(false);
 const isDeletedList = ref(false);
@@ -29,36 +29,36 @@ const showModal = ref(false);
 
 onMounted(async () => {
     loading.value = true;
-    await withholdingStore.getWithholdings();
-    withholdingList.value = withholdingStore.withholdingList.data;
-    deletedWithholdingList.value = withholdingStore.deletedWithholdings;
-    currentList.value = withholdingList.value;
+    await categoryStore.getCategories();
+    categoryList.value = categoryStore.categoryList.data;
+    deletedCategoryList.value = categoryStore.deletedCategories;
+    currentList.value = categoryList.value;
     loading.value = false;
 });
 
 function changeList() {
     isDeletedList.value = !isDeletedList.value;
     if (!isDeletedList.value) {
-        currentList.value = withholdingList.value;
+        currentList.value = categoryList.value;
     } else {
-        currentList.value = deletedWithholdingList.value;
+        currentList.value = deletedCategoryList.value;
     }
 }
 
 function toggleModal() {
-    editedWithholding.value = {};
+    editedCategory.value = {};
     isEdit.value = false;
     showModal.value = !showModal.value;
 }
 
-function newWithholding(withholding) {
-    withholdingList.value.push(withholding);
+function newCategory(category) {
+    categoryList.value.push(category);
 }
 
-function toggleEditModal(withholding) {
+function toggleEditModal(category) {
     loading.value = true;
-    withholdingStore.getWithholding(withholding).then(() => {
-        editedWithholding.value = withholdingStore.withholding.data;
+    categoryStore.getCategory(category).then(() => {
+        editedCategory.value = categoryStore.category.data;
         isEdit.value = true;
         showModal.value = !showModal.value;
         loading.value = false;
@@ -70,8 +70,8 @@ function deleteItem(event, id) {
         message: 'Are you sure you want to proceed?',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-            withholdingStore.deleteWithholding(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding deleted successfully!', life: 3000 });
+            categoryStore.deleteCategory(id).then(() => {
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Category deleted successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -81,8 +81,8 @@ function deleteItem(event, id) {
 }
 
 function restoreItem(id) {
-    withholdingStore.restoreWithholding(id).then(() => {
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding restored successfully!', life: 3000 });
+    categoryStore.restoreCategory(id).then(() => {
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Category restored successfully!', life: 3000 });
         setTimeout(() => {
             window.location.reload();
         }, 2000);
@@ -94,8 +94,8 @@ function forceDeleteItem(event, id) {
         message: 'Are you sure? You can not undo this action!',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-            withholdingStore.forceDeleteWithholding(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding deleted successfully!', life: 3000 });
+            categoryStore.forceDeleteCategory(id).then(() => {
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Category deleted successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -108,7 +108,7 @@ function forceDeleteItem(event, id) {
 <template>
     <Toolbar class="col-12 my-3">
         <template #start>
-            <p class="text-xl font-bold">Withholdings</p>
+            <p class="text-xl font-bold">Categories</p>
         </template>
 
         <template #end>
@@ -154,7 +154,12 @@ function forceDeleteItem(event, id) {
                 </div>
             </template>
             <Column field="name" header="Name" />
-            <Column field="rate" header="Rate" />
+            <Column field="type" header="Type" :sortable="true">
+                <template #body="slotProps">
+                    <span v-if="slotProps.data.type === 'income'" class="font-semibold text-green-600"> Income </span>
+                    <span v-else class="font-semibold text-red-600"> Expense </span>
+                </template>
+            </Column>
             <Column header="" width="100" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.deleted_at === null">
@@ -168,8 +173,8 @@ function forceDeleteItem(event, id) {
                 </template>
             </Column>
         </DataTable>
-        <Dialog :modal="true" header="Create Currency" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
-            <Create @toggleModal="toggleModal" @newWithholding="newWithholding" :withholding="editedWithholding" :is-edit="isEdit" />
+        <Dialog :modal="true" header="Create Category" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
+            <Create @toggleModal="toggleModal" @newCategory="newCategory" :category="editedCategory" :is-edit="isEdit" />
         </Dialog>
     </div>
 </template>

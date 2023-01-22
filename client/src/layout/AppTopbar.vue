@@ -1,16 +1,14 @@
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/composables/auth';
 import { useConfirm } from 'primevue/useconfirm';
 import axios from 'axios';
 
-const { onMenuToggle, contextPath } = useLayout();
+const { onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
 const topbarMenuActive = ref(false);
-const router = useRouter();
 const auth = useAuthStore();
 const selectedCompany = computed(() => {
     return JSON.parse(localStorage.getItem('selectedCompany'));
@@ -90,8 +88,8 @@ const isOutsideClicked = (event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-calendar"></i>
+            <button class="p-link layout-topbar-button">
+                <i class="pi pi-sun"></i>
                 <span>Calendar</span>
             </button>
             <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">

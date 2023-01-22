@@ -1,6 +1,11 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import { computed } from 'vue';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: '404 Not Found'
+});
 
 const { layoutConfig, contextPath } = useLayout();
 

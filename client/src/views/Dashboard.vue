@@ -1,6 +1,11 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useAuthStore } from '../composables/auth';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: 'Dashboard'
+});
 
 const auth = useAuthStore();
 

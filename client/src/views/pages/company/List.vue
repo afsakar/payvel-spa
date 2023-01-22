@@ -6,6 +6,11 @@ import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useCompanyStore } from '@/composables/company';
 import Create from '@/views/pages/company/CreateEditModal.vue';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: 'Company List'
+});
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }

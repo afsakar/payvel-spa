@@ -5,6 +5,11 @@ import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import Create from '@/views/pages/tax/CreateEditModal.vue';
+import { useHead } from '@unhead/vue';
+
+useHead({
+    title: 'Tax List'
+});
 
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }

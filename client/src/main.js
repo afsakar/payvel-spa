@@ -113,12 +113,16 @@ import BlockViewer from '@/components/BlockViewer.vue';
 import '@/assets/styles.scss';
 import 'currency-flags/dist/currency-flags.min.css';
 
+import { createHead } from '@unhead/vue';
+
 const app = createApp(App);
+const head = createHead();
 pinia.use(({ store }) => {
     store.router = markRaw(router);
 });
 pinia.use(piniaPluginPersistedstate);
 
+app.use(head);
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);

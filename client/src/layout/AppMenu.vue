@@ -48,7 +48,8 @@ const model = ref([
                 icon: 'ti pi-fw ti-settings',
                 items: [
                     { label: 'Currencies', to: '/currencies' },
-                    { label: 'Units', to: '/units' }
+                    { label: 'Units', to: '/units' },
+                    { label: 'Materials', to: '/materials' }
                 ]
             },
             {
@@ -67,7 +68,12 @@ const model = ref([
                     { label: 'Accounts', to: '/accounts' }
                 ]
             },
-            { label: 'Corporations', icon: 'ti pi-fw ti-building-skyscraper', to: '/corporations' }
+            { label: 'Corporations', icon: 'ti pi-fw ti-building-skyscraper', to: '/corporations' },
+            {
+                label: 'Transactions',
+                icon: 'ti pi-fw ti-arrows-diff',
+                items: [{ label: 'Categories', to: '/categories' }]
+            }
         ]
     }
 ]);

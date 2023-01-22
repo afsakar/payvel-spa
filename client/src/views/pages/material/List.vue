@@ -1,14 +1,14 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { useWithholdingStore } from '@/composables/withholding';
+import { useMaterialStore } from '@/composables/material';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
-import Create from '@/views/pages/withholding/CreateEditModal.vue';
+import Create from '@/views/pages/material/CreateEditModal.vue';
 import { useHead } from '@unhead/vue';
 
 useHead({
-    title: 'Withholding List'
+    title: 'Material List'
 });
 
 const filters = ref({
@@ -17,11 +17,11 @@ const filters = ref({
 
 const toast = useToast();
 const confirm = useConfirm();
-const withholdingStore = useWithholdingStore();
+const materialStore = useMaterialStore();
 const currentList = ref(null);
-const withholdingList = ref([]);
-const deletedWithholdingList = ref([]);
-const editedWithholding = ref({});
+const materialList = ref([]);
+const deletedMaterialList = ref([]);
+const editedMaterial = ref({});
 const isEdit = ref(false);
 const loading = ref(false);
 const isDeletedList = ref(false);
@@ -29,36 +29,36 @@ const showModal = ref(false);
 
 onMounted(async () => {
     loading.value = true;
-    await withholdingStore.getWithholdings();
-    withholdingList.value = withholdingStore.withholdingList.data;
-    deletedWithholdingList.value = withholdingStore.deletedWithholdings;
-    currentList.value = withholdingList.value;
+    await materialStore.getMaterials();
+    materialList.value = materialStore.materialList.data;
+    deletedMaterialList.value = materialStore.deletedMaterials;
+    currentList.value = materialList.value;
     loading.value = false;
 });
 
 function changeList() {
     isDeletedList.value = !isDeletedList.value;
     if (!isDeletedList.value) {
-        currentList.value = withholdingList.value;
+        currentList.value = materialList.value;
     } else {
-        currentList.value = deletedWithholdingList.value;
+        currentList.value = deletedMaterialList.value;
     }
 }
 
 function toggleModal() {
-    editedWithholding.value = {};
+    editedMaterial.value = {};
     isEdit.value = false;
     showModal.value = !showModal.value;
 }
 
-function newWithholding(withholding) {
-    withholdingList.value.push(withholding);
+function newMaterial(material) {
+    materialList.value.push(material);
 }
 
-function toggleEditModal(withholding) {
+function toggleEditModal(material) {
     loading.value = true;
-    withholdingStore.getWithholding(withholding).then(() => {
-        editedWithholding.value = withholdingStore.withholding.data;
+    materialStore.getMaterial(material).then(() => {
+        editedMaterial.value = materialStore.material.data;
         isEdit.value = true;
         showModal.value = !showModal.value;
         loading.value = false;
@@ -70,8 +70,8 @@ function deleteItem(event, id) {
         message: 'Are you sure you want to proceed?',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-            withholdingStore.deleteWithholding(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding deleted successfully!', life: 3000 });
+            materialStore.deleteMaterial(id).then(() => {
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Material deleted successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -81,8 +81,8 @@ function deleteItem(event, id) {
 }
 
 function restoreItem(id) {
-    withholdingStore.restoreWithholding(id).then(() => {
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding restored successfully!', life: 3000 });
+    materialStore.restoreMaterial(id).then(() => {
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Material restored successfully!', life: 3000 });
         setTimeout(() => {
             window.location.reload();
         }, 2000);
@@ -94,8 +94,8 @@ function forceDeleteItem(event, id) {
         message: 'Are you sure? You can not undo this action!',
         icon: 'pi pi-exclamation-triangle',
         accept: () => {
-            withholdingStore.forceDeleteWithholding(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding deleted successfully!', life: 3000 });
+            materialStore.forceDeleteMaterial(id).then(() => {
+                toast.add({ severity: 'success', summary: 'Successful', detail: 'Material deleted successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);
@@ -103,12 +103,26 @@ function forceDeleteItem(event, id) {
         }
     });
 }
+
+const types = ref({
+    service: 'Service',
+    procurement: 'Procurement',
+    service_procurement: 'Service & Procurement'
+});
+
+const categories = ref({
+    construction: 'Construction',
+    electricity: 'Electricity',
+    plumbing: 'Plumbing',
+    electronics: 'Electronics',
+    other: 'Other'
+});
 </script>
 
 <template>
     <Toolbar class="col-12 my-3">
         <template #start>
-            <p class="text-xl font-bold">Withholdings</p>
+            <p class="text-xl font-bold">Materials</p>
         </template>
 
         <template #end>
@@ -153,8 +167,23 @@ function forceDeleteItem(event, id) {
                     </div>
                 </div>
             </template>
+            <Column field="code" header="Code" style="width: 10%" />
             <Column field="name" header="Name" />
-            <Column field="rate" header="Rate" />
+            <Column field="type" header="Type">
+                <template #body="slotProps">
+                    <span class="text-sm">{{ types[slotProps.data.type] }}</span>
+                </template>
+            </Column>
+            <Column field="category" header="Category">
+                <template #body="slotProps">
+                    <span class="text-sm">{{ categories[slotProps.data.category] }}</span>
+                </template>
+            </Column>
+            <Column field="price" header="Price" style="width: 10%">
+                <template #body="slotProps">
+                    <span class="text-sm">{{ slotProps.data.currency.position === 'before' ? slotProps.data.currency.symbol + ' ' + slotProps.data.price : slotProps.data.price + ' ' + slotProps.data.currency.symbol }}</span>
+                </template>
+            </Column>
             <Column header="" width="100" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.deleted_at === null">
@@ -168,8 +197,8 @@ function forceDeleteItem(event, id) {
                 </template>
             </Column>
         </DataTable>
-        <Dialog :modal="true" header="Create Currency" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
-            <Create @toggleModal="toggleModal" @newWithholding="newWithholding" :withholding="editedWithholding" :is-edit="isEdit" />
+        <Dialog :modal="true" header="Create Material" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
+            <Create @toggleModal="toggleModal" @newMaterial="newMaterial" :material="editedMaterial" :is-edit="isEdit" />
         </Dialog>
     </div>
 </template>
