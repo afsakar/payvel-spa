@@ -36,7 +36,6 @@ const showModal = ref(false);
 function toggleModal() {
     showModal.value = !showModal.value;
     emit('toggleModal', showModal.value);
-    corporation.errors = {};
 }
 
 onMounted(async () => {

@@ -105,6 +105,16 @@ const router = createRouter({
                     ]
                 },
                 {
+                    path: '/agreements',
+                    children: [
+                        {
+                            name: 'agreements.index',
+                            path: '/agreements',
+                            component: () => import('@/views/pages/agreement/List.vue')
+                        }
+                    ]
+                },
+                {
                     path: '/categories',
                     children: [
                         {

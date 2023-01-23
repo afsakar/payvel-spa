@@ -68,7 +68,14 @@ const model = ref([
                     { label: 'Accounts', to: '/accounts' }
                 ]
             },
-            { label: 'Corporations', icon: 'ti pi-fw ti-building-skyscraper', to: '/corporations' },
+            {
+                label: 'Corporations',
+                icon: 'ti pi-fw ti-building-skyscraper',
+                items: [
+                    { label: 'Corporations', to: '/corporations' },
+                    { label: 'Agreements', to: '/agreements' }
+                ]
+            },
             {
                 label: 'Transactions',
                 icon: 'ti pi-fw ti-arrows-diff',
