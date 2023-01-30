@@ -26,113 +26,58 @@ const router = createRouter({
                 },
                 {
                     path: '/companies',
-                    children: [
-                        {
-                            name: 'companies.index',
-                            path: '/companies',
-                            component: () => import('@/views/pages/company/List.vue')
-                        }
-                    ]
+                    name: 'companies.index',
+                    component: () => import('@/views/pages/company/List.vue')
                 },
                 {
                     path: '/currencies',
-                    children: [
-                        {
-                            name: 'currencies.index',
-                            path: '/currencies',
-                            component: () => import('@/views/pages/currency/List.vue')
-                        }
-                    ]
+                    name: 'currencies.index',
+                    component: () => import('@/views/pages/currency/List.vue')
                 },
                 {
                     path: '/account-types',
-                    children: [
-                        {
-                            name: 'accountTypes.index',
-                            path: '/account-types',
-                            component: () => import('@/views/pages/accountType/List.vue')
-                        }
-                    ]
+                    name: 'accountTypes.index',
+                    component: () => import('@/views/pages/accountType/List.vue')
                 },
                 {
                     path: '/accounts',
-                    children: [
-                        {
-                            name: 'accounts.index',
-                            path: '/accounts',
-                            component: () => import('@/views/pages/account/List.vue')
-                        }
-                    ]
+                    name: 'accounts.index',
+                    component: () => import('@/views/pages/account/List.vue')
                 },
                 {
                     path: '/taxes',
-                    children: [
-                        {
-                            name: 'taxes.index',
-                            path: '/taxes',
-                            component: () => import('@/views/pages/tax/List.vue')
-                        }
-                    ]
+                    name: 'taxes.index',
+                    component: () => import('@/views/pages/tax/List.vue')
                 },
                 {
                     path: '/withholdings',
-                    children: [
-                        {
-                            name: 'withholdings.index',
-                            path: '/withholdings',
-                            component: () => import('@/views/pages/withholding/List.vue')
-                        }
-                    ]
+                    name: 'withholdings.index',
+                    component: () => import('@/views/pages/withholding/List.vue')
                 },
                 {
                     path: '/units',
-                    children: [
-                        {
-                            name: 'units.index',
-                            path: '/units',
-                            component: () => import('@/views/pages/unit/List.vue')
-                        }
-                    ]
+                    name: 'units.index',
+                    component: () => import('@/views/pages/unit/List.vue')
                 },
                 {
                     path: '/corporations',
-                    children: [
-                        {
-                            name: 'corporations.index',
-                            path: '/corporations',
-                            component: () => import('@/views/pages/corporation/List.vue')
-                        }
-                    ]
+                    name: 'corporations.index',
+                    component: () => import('@/views/pages/corporation/List.vue')
                 },
                 {
                     path: '/agreements',
-                    children: [
-                        {
-                            name: 'agreements.index',
-                            path: '/agreements',
-                            component: () => import('@/views/pages/agreement/List.vue')
-                        }
-                    ]
+                    name: 'agreements.index',
+                    component: () => import('@/views/pages/agreement/List.vue')
                 },
                 {
                     path: '/categories',
-                    children: [
-                        {
-                            name: 'categories.index',
-                            path: '/categories',
-                            component: () => import('@/views/pages/category/List.vue')
-                        }
-                    ]
+                    name: 'categories.index',
+                    component: () => import('@/views/pages/category/List.vue')
                 },
                 {
                     path: '/materials',
-                    children: [
-                        {
-                            name: 'materials.index',
-                            path: '/materials',
-                            component: () => import('@/views/pages/material/List.vue')
-                        }
-                    ]
+                    name: 'materials.index',
+                    component: () => import('@/views/pages/material/List.vue')
                 }
             ],
             meta: {

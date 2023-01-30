@@ -16,6 +16,8 @@ class AccountResource extends JsonResource
     {
         // return parent::toArray($request);
 
+        // TODO: Refactor currency and account_type
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -24,7 +26,7 @@ class AccountResource extends JsonResource
             'account_type_id' => $this->account_type_id,
             'currency_id' => $this->currency_id,
             'currency' => $this->currency ?? null,
-            'account_type' => $this->accountType ?? null,
+            'account_type' => $this->accountType ? $this->accountType->name : null,
             'deleted_at' => $this->deleted_at,
         ];
     }

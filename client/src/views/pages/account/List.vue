@@ -155,7 +155,12 @@ function restoreItem(id) {
 
             <Column field="name" header="Name" :sortable="true"></Column>
             <Column field="currency.code" header="Currency" :sortable="true"></Column>
-            <Column field="account_type.name" header="Account Type" :sortable="true"></Column>
+            <Column field="account_type" header="Account Type" :sortable="true"></Column>
+            <Column field="balance" header="Balance" :sortable="true">
+                <template #body="slotProps">
+                    <span>{{ slotProps.data.currency.position === 'after' ? slotProps.data.balance + ' ' + slotProps.data.currency.symbol : slotProps.data.currency.symbol + ' ' + slotProps.data.balance }}</span>
+                </template>
+            </Column>
             <Column header="" width="100" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.deleted_at === null">

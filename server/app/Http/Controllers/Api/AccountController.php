@@ -38,19 +38,17 @@ class AccountController extends Controller
     {
         try {
             DB::transaction(function () use ($request) {
-                Account::create([
-                    'name' => $request->name,
-                    'description' => $request->description,
-                    'balance' => $request->balance,
-                    'account_type_id' => $request->account_type_id,
-                    'currency_id' => $request->currency_id,
-                ]);
+                Account::create($request->validated());
 
                 Log::info('New Account created!');
 
                 return response()->json(['message' => 'Account has been created successfully!']);
             });
         } catch (\Throwable $th) {
+            Log::error('Error creating account', [
+                'error' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'message' => $th->getMessage()
             ], 422);
@@ -79,18 +77,17 @@ class AccountController extends Controller
     {
         try {
             DB::transaction(function () use ($request, $account) {
-                $account->name = $request->name;
-                $account->description = $request->description;
-                $account->balance = $request->balance;
-                $account->account_type_id = $request->account_type_id;
-                $account->currency_id = $request->currency_id;
-                $account->save();
+                $account->update($request->validated());
 
                 Log::info('Account ID no: ' . $account->id . ', has updated!');
 
                 return response()->json(['message' => 'Account has been updated successfully!']);
             });
         } catch (\Throwable $th) {
+            Log::error('Error updating account', [
+                'error' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'message' => $th->getMessage()
             ], 422);
@@ -114,6 +111,10 @@ class AccountController extends Controller
                 return response()->json(['message' => 'Account has been deleted successfully!']);
             });
         } catch (\Throwable $th) {
+            Log::error('Error creating account', [
+                'error' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'message' => $th->getMessage()
             ], 422);
@@ -147,6 +148,10 @@ class AccountController extends Controller
 
             return response()->json(['message' => 'Account has been deleted successfully!']);
         } catch (\Throwable $th) {
+            Log::error('Error deleting account', [
+                'error' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'message' => $th->getMessage()
             ], 422);
