@@ -1,7 +1,7 @@
 <script setup>
 import Create from '@/views/pages/agreement/CreateEditModal.vue';
 import { useAgreementStore } from '@/composables/agreement';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
@@ -26,10 +26,13 @@ const isEdit = ref(false);
 const loading = ref(false);
 const isDeletedList = ref(false);
 const showModal = ref(false);
+const selectedCompany = computed(() => {
+    return JSON.parse(localStorage.getItem('selectedCompany'));
+});
 
 onMounted(async () => {
     loading.value = true;
-    await agreementStore.getAgreements();
+    await agreementStore.getAgreements(selectedCompany.value.id);
     agreementList.value = agreementStore.agreementsList.data;
     deletedAgreementList.value = agreementStore.deletedAgreementList;
     currentList.value = agreementList.value;
@@ -158,7 +161,9 @@ function restoreItem(id) {
             <Column header="" width="100" style="width: 20%; min-width: 12rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
                     <div v-if="slotProps.data.deleted_at === null">
-                        <Button icon="pi pi-file" class="p-button-success p-button-text" />
+                        <router-link :to="'/agreements/' + slotProps.data.id + '/media'">
+                            <Button icon="pi pi-file" class="p-button-success p-button-text" />
+                        </router-link>
                         <Button icon="pi pi-pencil" class="p-button-warning p-button-text" @click="toggleEditModal(slotProps.data.id)" />
                         <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="deleteItem($event, slotProps.data.id)" />
                     </div>

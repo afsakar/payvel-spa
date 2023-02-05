@@ -22,4 +22,9 @@ class Company extends Model
         'tax_number',
         'logo',
     ];
+
+    public function agreements()
+    {
+        return $this->hasMany(Agreement::class);
+    }
 }

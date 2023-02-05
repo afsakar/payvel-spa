@@ -7,6 +7,7 @@ use App\Http\Requests\Agreement\AgreementStoreRequest;
 use App\Http\Requests\Agreement\AgreementUpdateRequest;
 use App\Http\Resources\AgreementResource;
 use App\Models\Agreement;
+use App\Models\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -19,13 +20,11 @@ class AgreementController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Company $company)
     {
-        $agreements = Agreement::with('company', 'corporation', 'media')->get();
-        $deletedAgreements = Agreement::onlyTrashed()->get();
-
-        return AgreementResource::collection($agreements)->additional([
-            'deleted_agreements' => $deletedAgreements,
+        $agreement = $company->agreements()->with('corporation');
+        return AgreementResource::collection($agreement->get())->additional([
+            'deleted_agreements' => $agreement->onlyTrashed()->get()
         ]);
     }
 
@@ -39,12 +38,7 @@ class AgreementController extends Controller
     {
         try {
             DB::transaction(function () use ($request) {
-                $agreement = Agreement::create([
-                    'name' => $request->name,
-                    'company_id' => $request->company_id,
-                    'corporation_id' => $request->corporation_id,
-                    'content' => $request->content,
-                ]);
+                $agreement = Agreement::create($request->validated());
 
                 Log::info('Agreement created successfully', [
                     'agreement' => $agreement,
@@ -71,8 +65,9 @@ class AgreementController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Agreement $agreement)
+    public function show($agreement)
     {
+        $agreement = Agreement::with('company', 'corporation', 'media')->where('id', $agreement)->first();
         return new AgreementResource($agreement);
     }
 
@@ -87,11 +82,7 @@ class AgreementController extends Controller
     {
         try {
             DB::transaction(function () use ($request, $agreement) {
-                $agreement->name = $request->name;
-                $agreement->company_id = $request->company_id;
-                $agreement->corporation_id = $request->corporation_id;
-                $agreement->content = $request->content;
-                $agreement->save();
+                $agreement->update($request->validated());
 
                 Log::info('Agreement updated successfully', [
                     'agreement' => $agreement,
@@ -181,7 +172,7 @@ class AgreementController extends Controller
     {
         try {
             $agreement = Agreement::onlyTrashed()->where('id', $id)->first();
-            $agreement->deletePreservingMedia();
+            // $agreement->deletePreservingMedia();
             $agreement->forceDelete();
 
             Log::info('Agreement force deleted successfully', [

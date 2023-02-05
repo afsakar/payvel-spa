@@ -70,6 +70,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/agreement/List.vue')
                 },
                 {
+                    path: '/agreements/:agreementID/media',
+                    name: 'agreements.media',
+                    component: () => import('@/views/pages/agreement/media/List.vue')
+                },
+                {
                     path: '/categories',
                     name: 'categories.index',
                     component: () => import('@/views/pages/category/List.vue')

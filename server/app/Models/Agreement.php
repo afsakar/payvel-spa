@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\CompanyScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Agreement extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, SoftDeletes, InteractsWithMedia, CompanyScope;
 
     protected $fillable = [
         'name',
@@ -27,10 +28,5 @@ class Agreement extends Model implements HasMedia
     public function corporation()
     {
         return $this->belongsTo(Corporation::class);
-    }
-
-    public function getMediaAttribute()
-    {
-        $this->getMedia();
     }
 }
