@@ -18,12 +18,24 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $units = Unit::all();
-        $deletedUnits = Unit::onlyTrashed()->get();
+        $taxes = Unit::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return UnitResource::collection($units)->additional([
-            'deletedUnits' => $deletedUnits
-        ]);
+        return UnitResource::collection($taxes);
+    }
+
+    public function trash()
+    {
+        $taxes = Unit::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return UnitResource::collection($taxes);
     }
 
     /**
@@ -35,9 +47,7 @@ class UnitController extends Controller
     public function store(UnitStoreRequest $request)
     {
         try {
-            Unit::create([
-                'name' => $request->name
-            ]);
+            Unit::create($request->validated());
 
             Log::info('New Unit created!');
 
@@ -122,7 +132,7 @@ class UnitController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage()
-            ], 422);
+            ], 500);
         }
     }
 
@@ -144,7 +154,7 @@ class UnitController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage()
-            ], 422);
+            ], 500);
         }
     }
 }

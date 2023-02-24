@@ -1,4 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 $gutter: 1rem; //for primeflex grid system
 @import '@/assets/layout/styles/layout/layout.scss';
@@ -13,9 +16,42 @@ $gutter: 1rem; //for primeflex grid system
 @import '@/assets/demo/styles/badges.scss';
 
 .p-paginator-bottom {
-  @apply mt-4;
+    @apply mt-4;
 }
 
 .p-datatable-header {
-  border: none !important;
+    border: none !important;
+}
+
+.p-datatable .p-datatable-footer {
+    padding: 0 !important;
+    border: none !important;
+}
+
+.pagination {
+    @apply isolate inline-flex rounded-md shadow-sm space-x-2 m-2;
+}
+
+.page-item.pagination-page-nav {
+    @apply bg-transparent text-[#ffffff99] hover:bg-[#64b5f629] relative inline-flex items-center border font-medium focus:z-20 rounded-md;
+}
+
+.page-link {
+    @apply relative inline-flex items-center px-3 py-2 font-medium text-[#ffffff99];
+}
+
+.page-link .sr-only {
+    @apply hidden;
+}
+
+.page-item.pagination-page-nav.active {
+    @apply relative z-10 inline-flex items-center border border-[#64b5f629] bg-[#64b5f629] font-medium text-[#ffffffde] focus:z-20;
+}
+
+.page-item.pagination-next-nav {
+    @apply bg-transparent text-gray-500 hover:bg-[#64b5f629] relative inline-flex items-center border font-medium focus:z-20 rounded-md;
+}
+
+.page-item.pagination-prev-nav {
+    @apply bg-transparent text-gray-500 hover:bg-[#64b5f629] relative inline-flex items-center border font-medium focus:z-20 rounded-md;
 }

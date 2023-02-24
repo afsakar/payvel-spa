@@ -23,12 +23,24 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::all();
-        $deletedCompanies = Company::onlyTrashed()->get();
+        $companies = Company::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return CompanyResource::collection($companies)->additional([
-            'deletedCompanies' => $deletedCompanies
-        ]);
+        return CompanyResource::collection($companies);
+    }
+
+    public function trash()
+    {
+        $companies = Company::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return CompanyResource::collection($companies);
     }
 
     /**

@@ -10,5 +10,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
     Route::get('/agreements/{company}', [AgreementController::class, 'index'])->name('agreements.index');
     Route::get('/agreements/get-agreement/{id}', [AgreementController::class, 'show'])->name('agreements.getAgreement');
     Route::apiResource('agreements.media', AgreementMediaController::class, array('as' => 'api'));
+    Route::get('/agreements/{company}/trash', [AgreementController::class, 'trash'])->name('agreements.trash');
     Route::apiResource('agreements', AgreementController::class, array('as' => 'api'));
 })->scopeBindings();

@@ -19,12 +19,26 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::all();
-        $deletedCategories = Category::onlyTrashed()->get();
+        $categories = Category::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return CategoryResource::collection($categories)->additional([
-            'deletedCategories' => $deletedCategories
-        ]);
+        return CategoryResource::collection($categories);
+    }
+
+
+    public function trash()
+    {
+
+        $deletedCategories = Category::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return CategoryResource::collection($deletedCategories);
     }
 
     /**

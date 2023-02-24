@@ -19,12 +19,24 @@ class AccountTypeController extends Controller
      */
     public function index()
     {
-        $accountTypes = AccountType::all();
-        $deletedAccountTypes = AccountType::onlyTrashed()->get();
+        $paginateList = AccountType::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return AccountTypeResource::collection($accountTypes)->additional([
-            'deletedAccountTypes' => $deletedAccountTypes
-        ]);
+        return AccountTypeResource::collection($paginateList);
+    }
+
+    public function trash()
+    {
+        $deletedList = AccountType::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return AccountTypeResource::collection($deletedList);
     }
 
     /**

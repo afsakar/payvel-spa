@@ -20,12 +20,24 @@ class TaxController extends Controller
      */
     public function index()
     {
-        $taxes = Tax::all();
-        $deletedTaxes = Tax::onlyTrashed()->get();
+        $taxes = Tax::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return TaxResource::collection($taxes)->additional([
-            'deletedTaxes' => $deletedTaxes
-        ]);
+        return TaxResource::collection($taxes);
+    }
+
+    public function trash()
+    {
+        $taxes = Tax::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return TaxResource::collection($taxes);
     }
 
     /**
@@ -102,9 +114,13 @@ class TaxController extends Controller
 
             return response()->json(['message' => 'Tax has been deleted successfully!']);
         } catch (\Throwable $th) {
+            Log::error('Error deleting tax', [
+                'error' => $th->getMessage()
+            ]);
+
             return response()->json([
                 'message' => $th->getMessage()
-            ], 422);
+            ], 500);
         }
     }
 
@@ -138,9 +154,12 @@ class TaxController extends Controller
 
             return response()->json(['message' => 'Tax has been force deleted successfully!']);
         } catch (\Throwable $th) {
+            Log::error('Error force deleting tax', [
+                'error' => $th->getMessage()
+            ]);
             return response()->json([
                 'message' => $th->getMessage()
-            ], 422);
+            ], 500);
         }
     }
 }

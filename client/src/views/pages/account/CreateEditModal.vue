@@ -73,7 +73,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (account.respStatus) {
                 toggleModal();
-                emit('newAccount', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Account created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

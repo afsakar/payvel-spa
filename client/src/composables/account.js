@@ -28,7 +28,12 @@ export const useAccountStore = defineStore('account', {
             await this.getToken();
             await axios.get('/api/v1/accounts').then((res) => {
                 this.accounts = res.data;
-                this.deletedAccounts = res.data.deletedAccounts;
+            });
+        },
+        async getDeletedAccounts() {
+            await this.getToken();
+            await axios.get('/api/v1/accounts/trash').then((res) => {
+                this.deletedAccounts = res.data;
             });
         },
         async getAccount(id) {

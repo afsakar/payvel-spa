@@ -1,56 +1,73 @@
 <script setup>
 import Create from '@/views/pages/account/CreateEditModal.vue';
 import { useAccountStore } from '@/composables/account';
-import { onMounted, ref } from 'vue';
-import { FilterMatchMode } from 'primevue/api';
+import { onMounted, ref, watch } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useHead } from '@unhead/vue';
+import { Bootstrap5Pagination } from 'laravel-vue-pagination';
+import axios from 'axios';
 
 useHead({
     title: 'Account List'
 });
 
 const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+    search: '',
+    sort: 'asc',
+    orderBy: 'name'
 });
 
 const toast = useToast();
 const confirm = useConfirm();
 const accountStore = useAccountStore();
-const currentList = ref(null);
 const accountList = ref([]);
-const deletedAccountList = ref([]);
 const editedAccount = ref({});
 const isEdit = ref(false);
 const loading = ref(false);
-const isDeletedList = ref(false);
 const showModal = ref(false);
+const checkMeta = ref(false); // check if there is more data to load
 
 onMounted(async () => {
-    loading.value = true;
-    await accountStore.getAccounts();
-    accountList.value = accountStore.accountsList.data;
-    deletedAccountList.value = accountStore.deletedAccountList;
-    currentList.value = accountList.value;
-    loading.value = false;
+    await getList();
+    checkMeta.value = accountList.value.meta.total >= accountList.value.meta.per_page ? true : false; // check if there is more data to load
 });
 
-function changeList() {
-    isDeletedList.value = !isDeletedList.value;
-    if (!isDeletedList.value) {
-        currentList.value = accountList.value;
-    } else {
-        currentList.value = deletedAccountList.value;
-    }
+async function getList() {
+    loading.value = true;
+    await getAccountList();
+    loading.value = false;
 }
+
+async function getAccountList(page = 1) {
+    await axios.get(`/api/v1/accounts?page=${page}&sort=${filters.value.sort}&order=${filters.value.orderBy}&search=${filters.value.search}`).then((res) => {
+        accountList.value = res.data;
+    });
+}
+
+function sortItem(orderBy) {
+    filters.value.orderBy = orderBy;
+    filters.value.sort = filters.value.sort == 'asc' ? 'desc' : 'asc';
+}
+
+watch(
+    filters.value,
+    async () => {
+        await getList();
+    },
+    { immediate: true }
+);
+
+async function resetFilters() {
+    filters.value.search = '';
+    filters.value.sort = 'asc';
+    filters.value.orderBy = 'name';
+}
+
 function toggleModal() {
     editedAccount.value = {};
     isEdit.value = false;
     showModal.value = !showModal.value;
-}
-function newAccount(account) {
-    accountList.value.push(account);
 }
 
 function toggleEditModal(account) {
@@ -67,6 +84,7 @@ function deleteItem(event, id) {
     confirm.require({
         message: 'Are you sure you want to proceed?',
         icon: 'pi pi-exclamation-triangle',
+        header: 'Confirmation',
         accept: () => {
             accountStore.deleteAccount(id).then(() => {
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Account deleted successfully!', life: 3000 });
@@ -75,30 +93,6 @@ function deleteItem(event, id) {
                 }, 2000);
             });
         }
-    });
-}
-
-function forceDeleteItem(event, id) {
-    confirm.require({
-        message: 'Are you sure? You can not undo this action!',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-            accountStore.forceDeleteAccount(id).then(() => {
-                toast.add({ severity: 'success', summary: 'Successful', detail: 'Account deleted successfully!', life: 3000 });
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            });
-        }
-    });
-}
-
-function restoreItem(id) {
-    accountStore.restoreAccount(id).then(() => {
-        toast.add({ severity: 'success', summary: 'Successful', detail: 'Account restored successfully!', life: 3000 });
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000);
     });
 }
 </script>
@@ -115,30 +109,17 @@ function restoreItem(id) {
     </Toolbar>
 
     <div class="card">
-        <DataTable
-            :loading="loading"
-            :bodyClass="'mb-3'"
-            ref="dt"
-            :filters="filters"
-            dataKey="id"
-            :value="currentList"
-            :paginator="true"
-            :rows="5"
-            stripedRows
-            removableSort
-            paginatorTemplate="PrevPageLink PageLinks NextPageLink RowsPerPageDropdown"
-            :rowsPerPageOptions="[5, 10, 20, 50]"
-            responsiveLayout="scroll"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
-            class="p-datatable-sm"
-        >
+        <DataTable :loading="loading" ref="dt" dataKey="id" :value="accountList.data" stripedRows removableSort responsiveLayout="scroll" class="p-datatable-sm">
             <template #header>
                 <div class="table-header">
                     <div class="flex gap-2 justify-content-end">
-                        <Button :class="{ 'text-green-600': isDeletedList, 'text-red-600': !isDeletedList }" :icon="isDeletedList ? 'pi pi-list' : 'pi pi-trash'" class="p-button-text" @click="changeList" />
+                        <Button icon="pi pi-history" @click="resetFilters" class="mr-2 p-button-text text-blue-600" />
+                        <RouterLink to="/accounts/trash">
+                            <Button icon="pi pi-trash" class="mr-2 p-button-text text-red-600" />
+                        </RouterLink>
                         <span class="p-input-icon-left">
                             <i class="pi pi-search" />
-                            <InputText v-model="filters['global'].value" placeholder="Search..." />
+                            <InputText v-model.lazy="filters.search" placeholder="Search..." />
                         </span>
                     </div>
                 </div>
@@ -148,34 +129,50 @@ function restoreItem(id) {
                 <div class="text-lg text-primary-400 py-3 flex align-items-center justify-content-center">
                     <div class="flex align-items-center between gap-2">
                         <i class="pi pi-search"></i>
-                        <p class="text-center">{{ filters['global'].value ? 'No results found' : 'No data found' }}</p>
+                        <p class="text-center">{{ filters.search ? 'No results found' : 'No data found' }}</p>
                     </div>
                 </div>
             </template>
 
-            <Column field="name" header="Name" :sortable="true"></Column>
-            <Column field="currency.code" header="Currency" :sortable="true"></Column>
-            <Column field="account_type" header="Account Type" :sortable="true"></Column>
-            <Column field="balance" header="Balance" :sortable="true">
+            <Column field="name">
+                <template #header>
+                    <SortIcon @click="sortItem('name')" name="Name" column="name" :sort="filters.sort" :active-column="filters.orderBy" />
+                </template>
+            </Column>
+            <Column field="currency.code">
+                <template #header>
+                    <SortIcon @click="sortItem('currency_id')" name="Currency" column="currency_id" :sort="filters.sort" :active-column="filters.orderBy" />
+                </template>
+            </Column>
+            <Column field="account_type">
+                <template #header>
+                    <SortIcon @click="sortItem('account_type_id')" name="Account Type" column="account_type_id" :sort="filters.sort" :active-column="filters.orderBy" />
+                </template>
+            </Column>
+            <Column field="balance">
+                <template #header>
+                    <SortIcon @click="sortItem('balance')" name="Balance" column="balance" :sort="filters.sort" :active-column="filters.orderBy" />
+                </template>
                 <template #body="slotProps">
                     <span>{{ slotProps.data.currency.position === 'after' ? slotProps.data.balance + ' ' + slotProps.data.currency.symbol : slotProps.data.currency.symbol + ' ' + slotProps.data.balance }}</span>
                 </template>
             </Column>
             <Column header="" width="100" style="width: 10%; min-width: 8rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
-                    <div v-if="slotProps.data.deleted_at === null">
+                    <div>
                         <Button icon="pi pi-pencil" class="p-button-warning p-button-text" @click="toggleEditModal(slotProps.data.id)" />
                         <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="deleteItem($event, slotProps.data.id)" />
                     </div>
-                    <div v-else>
-                        <Button icon="pi pi-refresh" class="p-button-success p-button-text" @click="restoreItem(slotProps.data.id)" />
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="forceDeleteItem($event, slotProps.data.id)" />
-                    </div>
                 </template>
             </Column>
+            <template #footer>
+                <div v-if="checkMeta" class="border border-1 mt-4 rounded border-[#304562] flex items-center justify-center">
+                    <Bootstrap5Pagination :data="accountList" @pagination-change-page="getAccountList" />
+                </div>
+            </template>
         </DataTable>
         <Dialog :modal="true" header="Create Account" v-model:visible="showModal" class="m-3 md:w-5 w-full md:max-w-screen">
-            <Create @toggleModal="toggleModal" @newAccount="newAccount" :account="editedAccount" :is-edit="isEdit" />
+            <Create @toggleModal="toggleModal" :account="editedAccount" :is-edit="isEdit" />
         </Dialog>
     </div>
 </template>

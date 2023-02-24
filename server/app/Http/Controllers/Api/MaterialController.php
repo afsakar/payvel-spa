@@ -19,13 +19,24 @@ class MaterialController extends Controller
      */
     public function index()
     {
-        $materials = Material::all();
-        $deletedMaterials = Material::onlyTrashed()->get();
+        $currencies = Material::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return MaterialResource::collection($materials)->additional([
-            'deletedMaterials' => $deletedMaterials
-        ]);
+        return MaterialResource::collection($currencies);
+    }
 
+    public function trash()
+    {
+        $currencies = Material::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return MaterialResource::collection($currencies);
     }
 
     /**
@@ -146,48 +157,42 @@ class MaterialController extends Controller
         }
     }
 
-    public function restore(Material $material)
+    public function restore($id)
     {
         try {
+            $material = Material::onlyTrashed()->where('id', $id)->first();
             $material->restore();
 
-            Log::info('Material restored successfully', [
-                'material' => $material
-            ]);
+            Log::info('Material ID no: ' . $material->id . ', has restored!');
 
-            return response()->json([
-                'message' => 'Material restored successfully'
-            ], 200);
+            return response()->json(['message' => 'Material has been restored successfully!']);
         } catch (\Throwable $th) {
             Log::error('Error restoring material', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error restoring material'
+                'message' => $th->getMessage()
             ], 500);
         }
     }
 
-    public function forceDelete(Material $material)
+    public function forceDelete($id)
     {
         try {
+            $material = Material::onlyTrashed()->where('id', $id)->first();
             $material->forceDelete();
 
-            Log::info('Material force deleted successfully', [
-                'material' => $material
-            ]);
+            Log::info('Material ID no: ' . $material->id . ', has force deleted!');
 
-            return response()->json([
-                'message' => 'Material force deleted successfully'
-            ], 200);
+            return response()->json(['message' => 'Material has been deleted successfully!']);
         } catch (\Throwable $th) {
             Log::error('Error force deleting material', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error force deleting material'
+                'message' => $th->getMessage()
             ], 500);
         }
     }

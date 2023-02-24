@@ -52,7 +52,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (tax.respStatus) {
                 toggleModal();
-                emit('newTax', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Tax created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

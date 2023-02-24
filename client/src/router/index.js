@@ -30,9 +30,19 @@ const router = createRouter({
                     component: () => import('@/views/pages/company/List.vue')
                 },
                 {
+                    path: '/companies/trash',
+                    name: 'companies.trash',
+                    component: () => import('@/views/pages/company/Trash.vue')
+                },
+                {
                     path: '/currencies',
                     name: 'currencies.index',
                     component: () => import('@/views/pages/currency/List.vue')
+                },
+                {
+                    path: '/currencies/trash',
+                    name: 'currencies.trash',
+                    component: () => import('@/views/pages/currency/Trash.vue')
                 },
                 {
                     path: '/account-types',
@@ -40,9 +50,19 @@ const router = createRouter({
                     component: () => import('@/views/pages/accountType/List.vue')
                 },
                 {
+                    path: '/account-types/trash',
+                    name: 'accountTypes.trash',
+                    component: () => import('@/views/pages/accountType/Trash.vue')
+                },
+                {
                     path: '/accounts',
                     name: 'accounts.index',
                     component: () => import('@/views/pages/account/List.vue')
+                },
+                {
+                    path: '/accounts/trash',
+                    name: 'accounts.trash',
+                    component: () => import('@/views/pages/account/Trash.vue')
                 },
                 {
                     path: '/taxes',
@@ -50,9 +70,19 @@ const router = createRouter({
                     component: () => import('@/views/pages/tax/List.vue')
                 },
                 {
+                    path: '/taxes/trash',
+                    name: 'taxes.trash',
+                    component: () => import('@/views/pages/tax/Trash.vue')
+                },
+                {
                     path: '/withholdings',
                     name: 'withholdings.index',
                     component: () => import('@/views/pages/withholding/List.vue')
+                },
+                {
+                    path: '/withholdings/trash',
+                    name: 'withholdings.trash',
+                    component: () => import('@/views/pages/withholding/Trash.vue')
                 },
                 {
                     path: '/units',
@@ -60,9 +90,19 @@ const router = createRouter({
                     component: () => import('@/views/pages/unit/List.vue')
                 },
                 {
+                    path: '/units/trash',
+                    name: 'units.trash',
+                    component: () => import('@/views/pages/unit/Trash.vue')
+                },
+                {
                     path: '/corporations',
                     name: 'corporations.index',
                     component: () => import('@/views/pages/corporation/List.vue')
+                },
+                {
+                    path: '/corporations/trash',
+                    name: 'corporations.trash',
+                    component: () => import('@/views/pages/corporation/Trash.vue')
                 },
                 {
                     path: '/agreements',
@@ -70,9 +110,24 @@ const router = createRouter({
                     component: () => import('@/views/pages/agreement/List.vue')
                 },
                 {
+                    path: '/agreements/trash',
+                    name: 'agreements.trash',
+                    component: () => import('@/views/pages/agreement/Trash.vue')
+                },
+                {
                     path: '/agreements/:agreementID/media',
                     name: 'agreements.media',
                     component: () => import('@/views/pages/agreement/media/List.vue')
+                },
+                {
+                    path: '/waybills',
+                    name: 'waybills.index',
+                    component: () => import('@/views/pages/waybill/List.vue')
+                },
+                {
+                    path: '/waybills/trash',
+                    name: 'waybills.trash',
+                    component: () => import('@/views/pages/waybill/Trash.vue')
                 },
                 {
                     path: '/categories',
@@ -80,9 +135,19 @@ const router = createRouter({
                     component: () => import('@/views/pages/category/List.vue')
                 },
                 {
+                    path: '/categories/trash',
+                    name: 'categories.trash',
+                    component: () => import('@/views/pages/category/Trash.vue')
+                },
+                {
                     path: '/materials',
                     name: 'materials.index',
                     component: () => import('@/views/pages/material/List.vue')
+                },
+                {
+                    path: '/materials/trash',
+                    name: 'materials.trash',
+                    component: () => import('@/views/pages/material/Trash.vue')
                 }
             ],
             meta: {

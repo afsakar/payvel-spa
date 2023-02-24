@@ -27,4 +27,9 @@ class Company extends Model
     {
         return $this->hasMany(Agreement::class);
     }
+
+    public function waybills()
+    {
+        return $this->hasMany(Waybill::class);
+    }
 }

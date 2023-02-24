@@ -28,7 +28,7 @@ function toggleModal() {
 }
 
 const form = ref({
-    name: props.isEdit && props.unit.name !== null ? props.unit.name : '',
+    name: props.isEdit && props.unit.name !== null ? props.unit.name : ''
 });
 
 const submit = async () => {
@@ -50,7 +50,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (unit.respStatus) {
                 toggleModal();
-                emit('newUnit', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Unit created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

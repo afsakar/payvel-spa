@@ -73,7 +73,8 @@ const model = ref([
                 icon: 'ti pi-fw ti-building-skyscraper',
                 items: [
                     { label: 'Corporations', to: '/corporations' },
-                    { label: 'Agreements', to: '/agreements' }
+                    { label: 'Agreements', to: '/agreements' },
+                    { label: 'Waybills', to: '/waybills' }
                 ]
             },
             {

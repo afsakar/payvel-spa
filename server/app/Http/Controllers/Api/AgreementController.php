@@ -8,10 +8,8 @@ use App\Http\Requests\Agreement\AgreementUpdateRequest;
 use App\Http\Resources\AgreementResource;
 use App\Models\Agreement;
 use App\Models\Company;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class AgreementController extends Controller
 {
@@ -22,10 +20,31 @@ class AgreementController extends Controller
      */
     public function index(Company $company)
     {
-        $agreement = $company->agreements()->with('corporation');
-        return AgreementResource::collection($agreement->get())->additional([
-            'deleted_agreements' => $agreement->onlyTrashed()->get()
-        ]);
+        $agreements = $company->agreements()->with('corporation');
+
+        $paginateList = $agreements->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%')
+                ->orWhereHas('corporation', function ($query) {
+                    $query->where('name', 'like', '%' . request()->search . '%');
+                });
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return AgreementResource::collection($paginateList);
+    }
+
+    public function trash(Company $company)
+    {
+        $deletedAgreements = $company->agreements()->onlyTrashed()->with('corporation');
+
+        $paginateList = $deletedAgreements->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return AgreementResource::collection($paginateList);
     }
 
     /**
@@ -189,71 +208,6 @@ class AgreementController extends Controller
 
             return response()->json([
                 'message' => 'Error force deleting agreement'
-            ], 500);
-        }
-    }
-
-    public function get_files(Agreement $agreement)
-    {
-        $files = $agreement->getMedia();
-
-        return response()->json([
-            'files' => $files
-        ], 200);
-    }
-
-    public function upload_file(Request $request, Agreement $agreement)
-    {
-       try {
-            $file = $request->file('file');
-            $fileName = Str::random(10) . '.' . $file->getClientOriginalExtension();
-            $agreement->addMedia($file)->usingFileName($fileName)->toMediaCollection('agreements');
-
-            Log::info('Agreement file uploaded successfully', [
-                'agreement' => $agreement,
-            ]);
-
-            return response()->json([
-                'message' => 'Agreement file uploaded successfully'
-            ], 201);
-       } catch (\Throwable $th) {
-            Log::error('Error uploading agreement file', [
-                'error' => $th->getMessage()
-            ]);
-
-            return response()->json([
-                'message' => 'Error uploading agreement file'
-            ], 500);
-       }
-    }
-
-    public function download_file(Agreement $agreement, $id)
-    {
-        $file = $agreement->getMedia()->where('id', $id)->first();
-
-        return response()->download($file->getPath(), $file->file_name);
-    }
-
-    public function delete_file(Agreement $agreement, $id)
-    {
-        try {
-            $file = $agreement->getMedia()->where('id', $id)->first();
-            $file->delete();
-
-            Log::info('Agreement file deleted successfully', [
-                'agreement' => $agreement,
-            ]);
-
-            return response()->json([
-                'message' => 'Agreement file deleted successfully'
-            ], 201);
-        } catch (\Throwable $th) {
-            Log::error('Error deleting agreement file', [
-                'error' => $th->getMessage()
-            ]);
-
-            return response()->json([
-                'message' => 'Error deleting agreement file'
             ], 500);
         }
     }

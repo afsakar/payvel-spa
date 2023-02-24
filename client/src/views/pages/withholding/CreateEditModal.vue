@@ -52,7 +52,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (withholding.respStatus) {
                 toggleModal();
-                emit('newWithholding', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Withholding created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

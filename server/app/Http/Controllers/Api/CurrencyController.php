@@ -22,12 +22,24 @@ class CurrencyController extends Controller
      */
     public function index()
     {
-        $currencies = Currency::all();
-        $deletedCurrencies = Currency::onlyTrashed()->get();
+        $currencies = Currency::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return CurrencyResource::collection($currencies)->additional([
-            'deletedCurrencies' => $deletedCurrencies
-        ]);
+        return CurrencyResource::collection($currencies);
+    }
+
+    public function trash()
+    {
+        $deletedItems = Currency::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return CurrencyResource::collection($deletedItems);
     }
 
     /**

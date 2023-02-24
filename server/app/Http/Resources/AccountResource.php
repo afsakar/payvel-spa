@@ -25,7 +25,7 @@ class AccountResource extends JsonResource
             'balance' => $this->balance,
             'account_type_id' => $this->account_type_id,
             'currency_id' => $this->currency_id,
-            'currency' => $this->currency ?? null,
+            'currency' => $this->currency->only('code', 'symbol', 'position') ?? null,
             'account_type' => $this->accountType ? $this->accountType->name : null,
             'deleted_at' => $this->deleted_at,
         ];

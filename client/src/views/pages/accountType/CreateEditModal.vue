@@ -42,7 +42,7 @@ function toggleModal() {
 
 const form = ref({
     name: props.isEdit && props.accountType.name !== null ? props.accountType.name : '',
-    status: props.isEdit && props.accountType.status !== null ? props.accountType.status : '',
+    status: props.isEdit && props.accountType.status !== null ? props.accountType.status : ''
 });
 
 const submit = async () => {
@@ -65,7 +65,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (accountType.respStatus) {
                 toggleModal();
-                emit('newAccountType', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Account Type created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

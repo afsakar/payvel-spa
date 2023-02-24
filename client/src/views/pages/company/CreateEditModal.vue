@@ -96,7 +96,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (company.respStatus) {
                 toggleModal();
-                emit('newCompany', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Company created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

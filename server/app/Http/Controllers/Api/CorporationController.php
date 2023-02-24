@@ -20,13 +20,29 @@ class CorporationController extends Controller
      */
     public function index()
     {
-        $corporations = Corporation::all();
-        $deletedCorporations = Corporation::onlyTrashed()->get();
+        $paginateList = Corporation::with('currency')->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%')
+                ->orWhereHas('currency', function ($query) {
+                    $query->where('code', 'like', '%' . request()->search . '%');
+                });
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return CorporationResource::collection($corporations)->additional([
-            'deleted_corporations' => $deletedCorporations,
-        ]);
+        return CorporationResource::collection($paginateList);
+    }
 
+    public function trash()
+    {
+        $corporations = Corporation::onlyTrashed();
+
+        $paginateList = $corporations->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return CorporationResource::collection($paginateList);
     }
 
     /**
@@ -129,7 +145,7 @@ class CorporationController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage(),
-            ], 422);
+            ], 500);
         }
     }
 
@@ -147,7 +163,7 @@ class CorporationController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage(),
-            ], 422);
+            ], 500);
         }
     }
 
@@ -165,7 +181,7 @@ class CorporationController extends Controller
         } catch (\Throwable $th) {
             return response()->json([
                 'message' => $th->getMessage(),
-            ], 422);
+            ], 500);
         }
     }
 }

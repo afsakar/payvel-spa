@@ -123,7 +123,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (material.respStatus) {
                 toggleModal();
-                emit('newMaterial', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Material created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

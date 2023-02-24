@@ -20,12 +20,24 @@ class AccountController extends Controller
      */
     public function index()
     {
-        $accounts = Account::all();
-        $deletedAccounts = Account::onlyTrashed()->get();
+        $accounts = Account::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return AccountResource::collection($accounts)->additional([
-            'deletedAccounts' => $deletedAccounts
-        ]);
+        return AccountResource::collection($accounts);
+    }
+
+    public function trash()
+    {
+        $deletedAccounts = Account::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return AccountResource::collection($deletedAccounts);
     }
 
     /**

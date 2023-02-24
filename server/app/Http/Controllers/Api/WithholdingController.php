@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Withholding\WithholdingStoreRequest;
+use App\Http\Requests\Withholding\WithholdingUpdateRequest;
 use App\Http\Resources\WithholdingResource;
 use App\Models\Withholding;
 use Illuminate\Http\JsonResponse;
@@ -18,12 +20,24 @@ class WithholdingController extends Controller
      */
     public function index()
     {
-        $withHoldings = Withholding::all();
-        $deletedWithHoldings = Withholding::onlyTrashed()->get();
+        $withholdings = Withholding::when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
 
-        return WithholdingResource::collection($withHoldings)->additional([
-            'deletedWithholdings' => $deletedWithHoldings
-        ]);
+        return WithholdingResource::collection($withholdings);
+    }
+
+    public function trash()
+    {
+        $withholdings = Withholding::onlyTrashed()->when(request()->has('search'), function ($query) {
+            $query->where('name', 'like', '%' . request()->search . '%');
+        })->when(request()->has('sort'), function ($query) {
+            $query->orderBy(request()->order, request()->sort);
+        })->paginate(5);
+
+        return WithholdingResource::collection($withholdings);
     }
 
     /**
@@ -32,7 +46,7 @@ class WithholdingController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(WithholdingStoreRequest $request)
     {
         try {
             Withholding::create([
@@ -68,14 +82,14 @@ class WithholdingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Withholding $withholding)
+    public function update(WithholdingUpdateRequest $request, Withholding $withholding)
     {
         try {
             $withholding->name = $request->name;
             $withholding->rate = $request->rate;
             $withholding->save();
 
-            Log::info('Withholding ID no: '. $withholding->id . ', has updated!');
+            Log::info('Withholding ID no: ' . $withholding->id . ', has updated!');
 
             return response()->json(['message' => 'Withholding has been updated successfully!']);
         } catch (\Throwable $th) {
@@ -96,7 +110,7 @@ class WithholdingController extends Controller
         try {
             $withholding->delete();
 
-            Log::info('Tax ID no: '. $withholding->id . ', has deleted!');
+            Log::info('Tax ID no: ' . $withholding->id . ', has deleted!');
 
             return response()->json(['message' => 'Withholding has been deleted successfully!']);
         } catch (\Throwable $th) {
@@ -116,7 +130,7 @@ class WithholdingController extends Controller
     {
         $withholding = Withholding::onlyTrashed()->findOrFail($id);
         $withholding->restore();
-        Log::info('Withholding ID no: '. $withholding->id . ', has restored!');
+        Log::info('Withholding ID no: ' . $withholding->id . ', has restored!');
         return response()->json(['message' => 'Withholding has been restored successfully!']);
     }
 
@@ -132,7 +146,7 @@ class WithholdingController extends Controller
             $withholding = Withholding::onlyTrashed()->where('id', $id)->first();
             $withholding->forceDelete();
 
-            Log::info('Withholding ID no: '. $withholding->id . ', has force deleted!');
+            Log::info('Withholding ID no: ' . $withholding->id . ', has force deleted!');
 
             return response()->json(['message' => 'Withholding has been force deleted successfully!']);
         } catch (\Throwable $th) {

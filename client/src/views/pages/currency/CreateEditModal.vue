@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import { useCurrencyStore } from '@/composables/currencies';
+import { useCurrencyStore } from '@/composables/currency';
 
 const props = defineProps({
     currency: {
@@ -67,7 +67,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (currency.respStatus) {
                 toggleModal();
-                emit('newCurrency', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Currency created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();

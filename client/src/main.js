@@ -110,6 +110,8 @@ import VirtualScroller from 'primevue/virtualscroller';
 import CodeHighlight from '@/components/CodeHighlight.vue';
 import BlockViewer from '@/components/BlockViewer.vue';
 
+import SortIcon from '@/components/SortIcon.vue';
+
 import '@/assets/styles.scss';
 import 'currency-flags/dist/currency-flags.min.css';
 
@@ -135,6 +137,7 @@ app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
 
+app.component('SortIcon', SortIcon);
 app.component('CodeHighlight', CodeHighlight);
 app.component('BlockViewer', BlockViewer);
 

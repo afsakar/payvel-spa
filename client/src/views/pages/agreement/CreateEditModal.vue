@@ -63,7 +63,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (agreementStore.respStatus) {
                 toggleModal();
-                emit('newAgreement', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Agreement created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
