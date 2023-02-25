@@ -125,6 +125,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/waybill/List.vue')
                 },
                 {
+                    path: '/waybills/:waybillID/items',
+                    name: 'waybills.items',
+                    component: () => import('@/views/pages/waybill/ItemList.vue')
+                },
+                {
                     path: '/waybills/trash',
                     name: 'waybills.trash',
                     component: () => import('@/views/pages/waybill/Trash.vue')

@@ -103,6 +103,10 @@ function separateNumber(val) {
         </template>
     </Toolbar>
 
+    <Message severity="warn">
+        <span>If you perform a deletion at this stage, the operation cannot be undone!</span>
+    </Message>
+
     <div class="card">
         <DataTable :loading="loading" ref="dt" dataKey="id" :value="paginateList.data" stripedRows removableSort responsiveLayout="scroll" class="p-datatable-sm">
             <template #header>

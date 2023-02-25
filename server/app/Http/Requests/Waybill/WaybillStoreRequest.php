@@ -30,6 +30,8 @@ class WaybillStoreRequest extends FormRequest
             'address' => 'required|string',
             'status' => 'required|string',
             'content' => 'required|string',
+            'due_date' => 'nullable|date',
+            'waybill_date' => 'nullable|date',
         ];
     }
 

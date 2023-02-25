@@ -46,7 +46,9 @@ const form = ref({
     content: props.isEdit && props.waybill.content !== null ? props.waybill.content : '',
     corporation_id: props.isEdit && props.waybill.corporation_id !== null ? props.waybill.corporation_id : '',
     address: props.isEdit && props.waybill.address !== null ? props.waybill.address : '',
-    status: props.isEdit && props.waybill.status !== null ? props.waybill.status : ''
+    status: props.isEdit && props.waybill.status !== null ? props.waybill.status : '',
+    due_date: props.isEdit && props.waybill.due_date !== null ? new Date(props.waybill.due_date) : '',
+    waybill_date: props.isEdit && props.waybill.waybill_date !== null ? new Date(props.waybill.waybill_date) : ''
 });
 
 const submit = async () => {
@@ -56,6 +58,8 @@ const submit = async () => {
     formData.value.append('corporation_id', form.value.corporation_id);
     formData.value.append('status', form.value.status);
     formData.value.append('address', form.value.address);
+    formData.value.append('due_date', new Date(form.value.due_date).toISOString());
+    formData.value.append('waybill_date', new Date(form.value.waybill_date).toISOString());
     if (props.isEdit) {
         formData.value.append('_method', 'PUT');
         await waybillStore.updateWaybill(props.waybill.id, formData.value).then(() => {
@@ -73,7 +77,6 @@ const submit = async () => {
             formData.value = new FormData();
             if (waybillStore.respStatus) {
                 toggleModal();
-                emit('newWaybill', form.value);
                 toast.add({ severity: 'success', summary: 'Successful', detail: 'Waybill created successfully!', life: 3000 });
                 setTimeout(() => {
                     window.location.reload();
@@ -96,6 +99,18 @@ const submit = async () => {
             <label>Address</label>
             <Textarea class="w-full" placeholder="Address" v-model="form.address" rows="5" />
             <span v-if="waybillStore.errors.address" id="address" class="block p-error">{{ waybillStore.errors.address[0] }}</span>
+        </div>
+
+        <div class="field md:col-6 col-12 m-0">
+            <label>Waybill Date</label>
+            <Calendar class="w-full" inputId="waybill_date" v-model="form.waybill_date" autocomplete="off" dateFormat="dd/mm/yy" />
+            <span v-if="waybillStore.errors.waybill_date" id="waybill_date" class="block p-error">{{ waybillStore.errors.waybill_date[0] }}</span>
+        </div>
+
+        <div class="field md:col-6 col-12 m-0">
+            <label>Due Date</label>
+            <Calendar class="w-full" inputId="due_date" v-model="form.due_date" autocomplete="off" dateFormat="dd/mm/yy" />
+            <span v-if="waybillStore.errors.due_date" id="due_date" class="block p-error">{{ waybillStore.errors.due_date[0] }}</span>
         </div>
 
         <div class="field col-12 m-0">

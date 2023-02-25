@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('number')->unique();
             $table->text('address');
             $table->string('status');
+            $table->timestamp('due_date')->nullable();
+            $table->timestamp('waybill_date')->nullable();
             $table->text('content');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete(null);
             $table->foreign('corporation_id')->references('id')->on('corporations')->onDelete(null);

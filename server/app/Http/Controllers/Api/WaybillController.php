@@ -8,6 +8,8 @@ use App\Http\Requests\Waybill\WaybillUpdateRequest;
 use App\Http\Resources\WaybillResource;
 use App\Models\Company;
 use App\Models\Waybill;
+use App\Models\WaybillItem;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -86,7 +88,7 @@ class WaybillController extends Controller
      */
     public function show($waybill)
     {
-        $waybill = Waybill::with('company', 'corporation')->where('id', $waybill)->first();
+        $waybill = Waybill::with('company', 'corporation', 'items.material.unit')->where('id', $waybill)->first();
         return new WaybillResource($waybill);
     }
 
@@ -179,6 +181,7 @@ class WaybillController extends Controller
     {
         try {
             $waybill = Waybill::onlyTrashed()->findOrFail($id);
+            $waybill->items()->forceDelete();
             $waybill->forceDelete();
 
             Log::info('Waybill force deleted successfully', [
@@ -195,6 +198,56 @@ class WaybillController extends Controller
 
             return response()->json([
                 'message' => 'Error force deleting waybill'
+            ], 500);
+        }
+    }
+
+    public function saveWaybillItems(Request $request, $id)
+    {
+
+        $request->merge([
+            'items' => json_decode($request->items, true)
+        ]);
+
+        $request->validate([
+            'items' => 'required|array',
+            'items.*' => 'required|array',
+            'items.*.material_id' => 'required|integer',
+            'items.*.quantity' => 'required|integer',
+            'items.*.price' => 'required|numeric',
+            'items.*.waybill_id' => 'required|integer',
+        ]);
+
+
+        try {
+            DB::transaction(function () use ($request, $id) {
+                $waybill = Waybill::findOrFail($id);
+                $waybill->items()->delete();
+
+                foreach ($request->items as $item) {
+                    WaybillItem::create([
+                        'waybill_id' => $waybill->id,
+                        'material_id' => $item['material_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ]);
+                }
+
+                Log::info('Waybill items saved successfully', [
+                    'waybill' => $waybill,
+                ]);
+
+                return response()->json([
+                    'message' => 'Waybill items saved successfully'
+                ], 201);
+            });
+        } catch (\Throwable $th) {
+            Log::error('Error saving waybill items', [
+                'error' => $th->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Error saving waybill items'
             ], 500);
         }
     }

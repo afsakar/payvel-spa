@@ -160,9 +160,9 @@ function deleteItem(event, id) {
             <Column header="" width="100" style="width: 20%; min-width: 12rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
                     <div>
-                        <!-- <router-link :to="'/waybills/' + slotProps.data.id + '/media'">
+                        <router-link :to="`/waybills/${slotProps.data.id}/items`">
                             <Button icon="pi pi-file" class="p-button-success p-button-text" />
-                        </router-link> -->
+                        </router-link>
                         <Button icon="pi pi-pencil" class="p-button-warning p-button-text" @click="toggleEditModal(slotProps.data.id)" />
                         <Button icon="pi pi-trash" class="p-button-danger p-button-text" @click="deleteItem($event, slotProps.data.id)" />
                     </div>

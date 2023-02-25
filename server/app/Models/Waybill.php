@@ -18,6 +18,13 @@ class Waybill extends Model
         'address',
         'status',
         'content',
+        'due_date',
+        'waybill_date',
+    ];
+
+    protected $dates = [
+        'due_date',
+        'waybill_date',
     ];
 
     public function company()

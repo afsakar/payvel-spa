@@ -7,6 +7,7 @@ export const useWaybillStore = defineStore('waybill', {
         corporations: null,
         deletedWaybills: null,
         waybill: null,
+        materials: null,
         formErrors: [],
         formSuccess: null,
         respStatus: null
@@ -97,6 +98,29 @@ export const useWaybillStore = defineStore('waybill', {
             await axios.get('/api/v1/corporations').then((res) => {
                 this.corporations = res.data.data;
             });
+        },
+        async getMaterials() {
+            await this.getToken();
+            await axios.get('/api/v1/materials').then((res) => {
+                this.materials = res.data.data;
+            });
+        },
+        async storeWaybillItems(waybillID, data) {
+            await this.getToken();
+            await axios
+                .post(`/api/v1/waybills/${waybillID}/items`, data)
+                .then((res) => {
+                    if (res.status === 422) {
+                        this.formErrors = res.data.errors;
+                    }
+                    this.formSuccess = res.data.message;
+                    this.respStatus = true;
+                })
+                .catch((err) => {
+                    if (err.response.status === 422) {
+                        this.formErrors = err.response.data.errors;
+                    }
+                });
         }
     }
 });
