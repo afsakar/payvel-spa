@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Models\Scopes\CompanyScope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Waybill extends Model
 {
-    use HasFactory, SoftDeletes, CompanyScope;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'number',
@@ -40,5 +41,10 @@ class Waybill extends Model
     public function items()
     {
         return $this->hasMany(WaybillItem::class);
+    }
+    
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new CompanyScope);
     }
 }

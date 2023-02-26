@@ -11,7 +11,7 @@ useHead({
 const { contextPath } = useLayout();
 const selectedCompany = ref(null);
 
-const companies = useCompanyStore();
+const companyStore = useCompanyStore();
 const companyList = ref([]);
 
 const logoUrl = computed(() => {
@@ -19,12 +19,12 @@ const logoUrl = computed(() => {
 });
 
 onMounted(async () => {
-    await companies.getCompanies();
-    companyList.value = [...companies.companyList.data];
+    await companyStore.getCompanies();
+    companyList.value = [...companyStore.companyList.data];
 });
 
 const submit = async () => {
-    await companies.selectCompany(selectedCompany.value);
+    await companyStore.selectCompany(selectedCompany.value);
 };
 </script>
 

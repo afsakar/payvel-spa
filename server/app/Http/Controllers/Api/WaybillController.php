@@ -20,8 +20,10 @@ class WaybillController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Company $company)
+    public function index($id)
     {
+        $company = Company::withTrashed()->findOrFail($id);
+
         if (request()->has('all') && request()->all == 'true') {
             $waybills = $company->waybills()->with('corporation');
 

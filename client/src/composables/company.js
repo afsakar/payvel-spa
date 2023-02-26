@@ -36,7 +36,9 @@ export const useCompanyStore = defineStore('company', {
                 localStorage.removeItem('selectedCompany');
             }
             useStorage('selectedCompany', company);
-            await router.push({ name: 'dashboard' });
+            setTimeout(() => {
+                window.location.assign('/');
+            }, 500);
         },
         async forgetCompany() {
             localStorage.removeItem('selectedCompany');

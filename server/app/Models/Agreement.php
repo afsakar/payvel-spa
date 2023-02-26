@@ -11,7 +11,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 
 class Agreement extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia, CompanyScope;
+    use HasFactory, SoftDeletes, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -28,5 +28,10 @@ class Agreement extends Model implements HasMedia
     public function corporation()
     {
         return $this->belongsTo(Corporation::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new CompanyScope);
     }
 }

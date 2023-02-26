@@ -3,9 +3,10 @@
 namespace App\Models\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 
-trait CompanyScope
+class CompanyScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
@@ -14,12 +15,12 @@ trait CompanyScope
      * @param  \Illuminate\Http\Request  $request
      * @return void
      */
-    public function scopeCompany(Builder $builder, Request $request)
+    public function apply(Builder $builder, Model $model)
     {
-        $companyId = $request->header('company_id');
+        $companyId = request()->header('company_id');
+
         if ($companyId) {
-            return $builder->where('company_id', $companyId);
+            $builder->where('company_id', $companyId);
         }
-        return $builder;
     }
 }
