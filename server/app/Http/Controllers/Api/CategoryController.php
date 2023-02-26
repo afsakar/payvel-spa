@@ -19,13 +19,23 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $categories = Category::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return CategoryResource::collection($categories);
+            return CategoryResource::collection($categories);
+        } else {
+            $categories = Category::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return CategoryResource::collection($categories);
+        }
     }
 
 

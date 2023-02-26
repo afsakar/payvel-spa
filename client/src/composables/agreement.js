@@ -96,7 +96,7 @@ export const useAgreementStore = defineStore('agreement', {
         },
         async getCorporations() {
             await this.getToken();
-            await axios.get('/api/v1/corporations').then((res) => {
+            await axios.get('/api/v1/corporations?all=true').then((res) => {
                 this.corporations = res.data.data;
             });
         },

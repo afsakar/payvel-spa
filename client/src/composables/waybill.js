@@ -95,13 +95,13 @@ export const useWaybillStore = defineStore('waybill', {
         },
         async getCorporations() {
             await this.getToken();
-            await axios.get('/api/v1/corporations').then((res) => {
+            await axios.get(`/api/v1/corporations?all=true`).then((res) => {
                 this.corporations = res.data.data;
             });
         },
         async getMaterials() {
             await this.getToken();
-            await axios.get('/api/v1/materials').then((res) => {
+            await axios.get(`/api/v1/materials?all=true`).then((res) => {
                 this.materials = res.data.data;
             });
         },

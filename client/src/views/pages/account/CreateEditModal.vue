@@ -98,13 +98,23 @@ function changeCurrency(e) {
 
         <div class="field col-12 m-0">
             <label>Account Type</label>
-            <Dropdown :options="account.accountTypesList" option-label="name" option-value="id" class="w-full" placeholder="Select Account Type" v-model="form.account_type_id" />
+            <Dropdown :options="account.accountTypesList" :virtualScrollerOptions="{ itemSize: 38 }" :filter="true" option-label="name" option-value="id" class="w-full" placeholder="Select Account Type" v-model="form.account_type_id" />
             <span v-if="account.errors.account_type_id" id="account_type_id" class="block p-error">{{ account.errors.account_type_id[0] }}</span>
         </div>
 
         <div class="field col-12 m-0">
             <label>Currency</label>
-            <Dropdown :options="account.currenciesList" option-label="name" option-value="id" class="w-full" placeholder="Select Currency" v-model="form.currency_id" @change="changeCurrency($event)" />
+            <Dropdown
+                :options="account.currenciesList"
+                :virtualScrollerOptions="{ itemSize: 38 }"
+                :filter="true"
+                option-label="name"
+                option-value="id"
+                class="w-full"
+                placeholder="Select Currency"
+                v-model="form.currency_id"
+                @change="changeCurrency($event)"
+            />
             <span v-if="account.errors.currency_id" id="currency_id" class="block p-error">{{ account.errors.currency_id[0] }}</span>
         </div>
 

@@ -170,7 +170,18 @@ function changeCurrency(e) {
 
         <div class="field col-12 m-0">
             <label>Currency</label>
-            <Dropdown :disabled="loading" :filter="true" :options="material.currenciesList" option-label="name" option-value="id" class="w-full" placeholder="Select Currency" v-model="form.currency_id" @change="changeCurrency($event)" />
+            <Dropdown
+                :disabled="loading"
+                :filter="true"
+                :options="material.currenciesList"
+                :virtualScrollerOptions="{ itemSize: 38 }"
+                option-label="name"
+                option-value="id"
+                class="w-full"
+                placeholder="Select Currency"
+                v-model="form.currency_id"
+                @change="changeCurrency($event)"
+            />
             <span v-if="material.errors.currency_id" id="currency_id" class="block p-error">{{ material.errors.currency_id[0] }}</span>
         </div>
 
@@ -193,13 +204,13 @@ function changeCurrency(e) {
 
         <div class="field md:col-6 col-12 m-0">
             <label>Tax</label>
-            <Dropdown :filter="true" :options="material.taxesList" option-label="name" option-value="id" class="w-full" placeholder="Select Tax" v-model="form.tax_id" />
+            <Dropdown :filter="true" :options="material.taxesList" :virtualScrollerOptions="{ itemSize: 38 }" option-label="name" option-value="id" class="w-full" placeholder="Select Tax" v-model="form.tax_id" />
             <span v-if="material.errors.tax_id" id="tax_id" class="block p-error">{{ material.errors.tax_id[0] }}</span>
         </div>
 
         <div class="field md:col-6 col-12 m-0">
             <label>Unit</label>
-            <Dropdown :filter="true" :options="material.unitsList" option-label="name" option-value="id" class="w-full" placeholder="Select Unit" v-model="form.unit_id" />
+            <Dropdown :filter="true" :options="material.unitsList" :virtualScrollerOptions="{ itemSize: 38 }" option-label="name" option-value="id" class="w-full" placeholder="Select Unit" v-model="form.unit_id" />
             <span v-if="material.errors.unit_id" id="unit_id" class="block p-error">{{ material.errors.unit_id[0] }}</span>
         </div>
 

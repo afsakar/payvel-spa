@@ -20,13 +20,23 @@ class AccountController extends Controller
      */
     public function index()
     {
-        $accounts = Account::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $accounts = Account::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return AccountResource::collection($accounts);
+            return AccountResource::collection($accounts);
+        } else {
+            $accounts = Account::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return AccountResource::collection($accounts);
+        }
     }
 
     public function trash()

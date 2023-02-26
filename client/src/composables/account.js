@@ -106,13 +106,13 @@ export const useAccountStore = defineStore('account', {
         },
         async getAccountTypes() {
             await this.getToken();
-            await axios.get('/api/v1/account-types').then((res) => {
+            await axios.get('/api/v1/account-types?all=true').then((res) => {
                 this.accountTypes = res.data.data;
             });
         },
         async getCurrencies() {
             await this.getToken();
-            await axios.get('/api/v1/currencies').then((res) => {
+            await axios.get('/api/v1/currencies?all=true').then((res) => {
                 this.currencies = res.data.data;
             });
         }

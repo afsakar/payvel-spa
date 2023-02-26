@@ -20,14 +20,25 @@ class CorporationController extends Controller
      */
     public function index()
     {
-        $paginateList = Corporation::with('currency')->when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%')
-                ->orWhereHas('currency', function ($query) {
-                    $query->where('code', 'like', '%' . request()->search . '%');
-                });
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $paginateList = Corporation::with('currency')->when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%')
+                    ->orWhereHas('currency', function ($query) {
+                        $query->where('code', 'like', '%' . request()->search . '%');
+                    });
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
+        } else {
+            $paginateList = Corporation::with('currency')->when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%')
+                    ->orWhereHas('currency', function ($query) {
+                        $query->where('code', 'like', '%' . request()->search . '%');
+                    });
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+        }
 
         return CorporationResource::collection($paginateList);
     }

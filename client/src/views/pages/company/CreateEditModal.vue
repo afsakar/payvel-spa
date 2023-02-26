@@ -65,7 +65,7 @@ const clearLogo = () => {
 };
 
 const submit = async () => {
-    if(form.value.logo) {
+    if (form.value.logo) {
         formData.value.append('logo', form.value.logo);
     }
     formData.value.append('name', form.value.name);

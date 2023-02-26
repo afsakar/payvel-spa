@@ -94,6 +94,6 @@ export const useWithholdingStore = defineStore('withholding', {
                 this.getWithholdings();
                 this.respStatus = true;
             });
-        },
+        }
     }
 });

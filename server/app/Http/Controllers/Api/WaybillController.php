@@ -22,18 +22,33 @@ class WaybillController extends Controller
      */
     public function index(Company $company)
     {
-        $waybills = $company->waybills()->with('corporation');
+        if (request()->has('all') && request()->all == 'true') {
+            $waybills = $company->waybills()->with('corporation');
 
-        $paginateList = $waybills->when(request()->has('search'), function ($query) {
-            $query->where('number', 'like', '%' . request()->search . '%')
-                ->orWhereHas('corporation', function ($query) {
-                    $query->where('name', 'like', '%' . request()->search . '%');
-                });
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+            $paginateList = $waybills->when(request()->has('search'), function ($query) {
+                $query->where('number', 'like', '%' . request()->search . '%')
+                    ->orWhereHas('corporation', function ($query) {
+                        $query->where('name', 'like', '%' . request()->search . '%');
+                    });
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return WaybillResource::collection($paginateList);
+            return WaybillResource::collection($paginateList);
+        } else {
+            $waybills = $company->waybills()->with('corporation');
+
+            $paginateList = $waybills->when(request()->has('search'), function ($query) {
+                $query->where('number', 'like', '%' . request()->search . '%')
+                    ->orWhereHas('corporation', function ($query) {
+                        $query->where('name', 'like', '%' . request()->search . '%');
+                    });
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return WaybillResource::collection($paginateList);
+        }
     }
 
     public function trash(Company $company)

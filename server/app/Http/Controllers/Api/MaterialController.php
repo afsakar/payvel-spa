@@ -19,13 +19,19 @@ class MaterialController extends Controller
      */
     public function index()
     {
-        $currencies = Material::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $materials = Material::all();
 
-        return MaterialResource::collection($currencies);
+            return MaterialResource::collection($materials);
+        } else {
+            $materials = Material::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return MaterialResource::collection($materials);
+        }
     }
 
     public function trash()
@@ -99,16 +105,16 @@ class MaterialController extends Controller
     public function update(MaterialUpdateRequest $request, Material $material)
     {
         try {
-                $material->unit_id = $request->unit_id;
-                $material->tax_id = $request->tax_id;
-                $material->currency_id = $request->currency_id;
-                $material->name = $request->name;
-                $material->description = $request->description;
-                $material->code = $request->code;
-                $material->price = $request->price;
-                $material->category = $request->category;
-                $material->type = $request->type;
-                $material->save();
+            $material->unit_id = $request->unit_id;
+            $material->tax_id = $request->tax_id;
+            $material->currency_id = $request->currency_id;
+            $material->name = $request->name;
+            $material->description = $request->description;
+            $material->code = $request->code;
+            $material->price = $request->price;
+            $material->category = $request->category;
+            $material->type = $request->type;
+            $material->save();
 
             Log::info('Material updated successfully', [
                 'material' => $material

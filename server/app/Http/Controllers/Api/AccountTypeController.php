@@ -19,13 +19,23 @@ class AccountTypeController extends Controller
      */
     public function index()
     {
-        $paginateList = AccountType::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $list = AccountType::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return AccountTypeResource::collection($paginateList);
+            return AccountTypeResource::collection($list);
+        } else {
+            $paginateList = AccountType::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return AccountTypeResource::collection($paginateList);
+        }
     }
 
     public function trash()
@@ -88,7 +98,7 @@ class AccountTypeController extends Controller
             $accountType->status = $request->status;
             $accountType->save();
 
-            Log::info('Account Type ID no: '. $accountType->id . ', has updated!');
+            Log::info('Account Type ID no: ' . $accountType->id . ', has updated!');
 
             return response()->json(['message' => 'Account Type has been updated successfully!']);
         } catch (\Throwable $th) {
@@ -109,7 +119,7 @@ class AccountTypeController extends Controller
         try {
             $accountType->delete();
 
-            Log::info('Account Type ID no: '. $accountType->id . ', has deleted!');
+            Log::info('Account Type ID no: ' . $accountType->id . ', has deleted!');
 
             return response()->json(['message' => 'Account Type has been deleted successfully!']);
         } catch (\Throwable $th) {
@@ -131,7 +141,7 @@ class AccountTypeController extends Controller
             $accountType = AccountType::onlyTrashed()->findOrFail($id);
             $accountType->restore();
 
-            Log::info('Account Type ID no: '. $accountType->id . ', has restored!');
+            Log::info('Account Type ID no: ' . $accountType->id . ', has restored!');
 
             return response()->json(['message' => 'Account Type has been restored successfully!']);
         } catch (\Throwable $th) {
@@ -153,7 +163,7 @@ class AccountTypeController extends Controller
             $accountType = AccountType::onlyTrashed()->findOrFail($id);
             $accountType->forceDelete();
 
-            Log::info('Account Type ID no: '. $accountType->id . ', has force deleted!');
+            Log::info('Account Type ID no: ' . $accountType->id . ', has force deleted!');
 
             return response()->json(['message' => 'Account Type has been force deleted successfully!']);
         } catch (\Throwable $th) {

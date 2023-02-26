@@ -20,13 +20,23 @@ class TaxController extends Controller
      */
     public function index()
     {
-        $taxes = Tax::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $taxes = Tax::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return TaxResource::collection($taxes);
+            return TaxResource::collection($taxes);
+        } else {
+            $taxes = Tax::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return TaxResource::collection($taxes);
+        }
     }
 
     public function trash()
@@ -89,7 +99,7 @@ class TaxController extends Controller
             $tax->rate = $request->rate;
             $tax->save();
 
-            Log::info('Tax ID no: '. $tax->id . ', has updated!');
+            Log::info('Tax ID no: ' . $tax->id . ', has updated!');
 
             return response()->json(['message' => 'Tax has been updated successfully!']);
         } catch (\Throwable $th) {
@@ -110,7 +120,7 @@ class TaxController extends Controller
         try {
             $tax->delete();
 
-            Log::info('Tax ID no: '. $tax->id . ', has deleted!');
+            Log::info('Tax ID no: ' . $tax->id . ', has deleted!');
 
             return response()->json(['message' => 'Tax has been deleted successfully!']);
         } catch (\Throwable $th) {
@@ -134,7 +144,7 @@ class TaxController extends Controller
     {
         $tax = Tax::onlyTrashed()->where('id', $id)->first();
         $tax->restore();
-        Log::info('Tax ID no: '. $tax->id . ', has restored!');
+        Log::info('Tax ID no: ' . $tax->id . ', has restored!');
         return response()->json(['message' => 'Tax has been restored successfully!']);
     }
 
@@ -150,7 +160,7 @@ class TaxController extends Controller
             $tax = Tax::onlyTrashed()->where('id', $id)->first();
             $tax->forceDelete();
 
-            Log::info('Tax ID no: '. $tax->id . ', has force deleted!');
+            Log::info('Tax ID no: ' . $tax->id . ', has force deleted!');
 
             return response()->json(['message' => 'Tax has been force deleted successfully!']);
         } catch (\Throwable $th) {

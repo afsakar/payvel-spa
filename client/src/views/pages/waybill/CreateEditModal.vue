@@ -151,7 +151,7 @@ const submit = async () => {
 
         <div class="field col-12 m-0">
             <label>Corporation</label>
-            <Dropdown :options="waybillStore.corporationsList" option-label="name" option-value="id" class="w-full" placeholder="Select Corporation" v-model="form.corporation_id" />
+            <Dropdown :options="waybillStore.corporationsList" :virtualScrollerOptions="{ itemSize: 38 }" :filter="true" option-label="name" option-value="id" class="w-full" placeholder="Select Corporation" v-model="form.corporation_id" />
             <span v-if="waybillStore.errors.corporation_id" id="currency_id" class="block p-error">{{ waybillStore.errors.corporation_id[0] }}</span>
         </div>
 

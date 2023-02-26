@@ -99,7 +99,7 @@ export const useCorporationStore = defineStore('corporation', {
         },
         async getCurrencies() {
             await this.getToken();
-            await axios.get('/api/v1/currencies').then((res) => {
+            await axios.get('/api/v1/currencies?all=true').then((res) => {
                 this.currencies = res.data.data;
             });
         }

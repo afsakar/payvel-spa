@@ -29,7 +29,7 @@ const waybillItems = ref([]);
 onMounted(async () => {
     loading.value = true;
     await waybillStore.getWaybill(waybillID);
-    await waybillStore.getMaterials();
+    await waybillStore.getMaterials('all=true');
     waybill.value = waybillStore.waybill.data;
     items.value = waybillStore.waybill.data.items;
 
@@ -172,7 +172,15 @@ const submit = async () => {
 
                     <Column header="Material">
                         <template #body="slotProps">
-                            <Dropdown :options="materials" optionValue="id" v-model="waybillItems[slotProps.index].material_id" optionLabel="name" class="p-inputtext-sm w-72 md:w-96" @change="changeMaterial($event, slotProps.index)" />
+                            <Dropdown
+                                :virtualScrollerOptions="{ itemSize: 38 }"
+                                :options="materials"
+                                optionValue="id"
+                                v-model="waybillItems[slotProps.index].material_id"
+                                optionLabel="name"
+                                class="p-inputtext-sm w-72 md:w-96"
+                                @change="changeMaterial($event, slotProps.index)"
+                            />
                         </template>
                     </Column>
                     <Column header="Unit">

@@ -18,24 +18,34 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $taxes = Unit::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $units = Unit::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return UnitResource::collection($taxes);
+            return UnitResource::collection($units);
+        } else {
+            $units = Unit::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return UnitResource::collection($units);
+        }
     }
 
     public function trash()
     {
-        $taxes = Unit::onlyTrashed()->when(request()->has('search'), function ($query) {
+        $units = Unit::onlyTrashed()->when(request()->has('search'), function ($query) {
             $query->where('name', 'like', '%' . request()->search . '%');
         })->when(request()->has('sort'), function ($query) {
             $query->orderBy(request()->order, request()->sort);
         })->paginate(5);
 
-        return UnitResource::collection($taxes);
+        return UnitResource::collection($units);
     }
 
     /**

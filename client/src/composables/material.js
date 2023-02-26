@@ -103,19 +103,19 @@ export const useMaterialStore = defineStore('material', {
         },
         async getCurrencies() {
             await this.getToken();
-            await axios.get('/api/v1/currencies').then((res) => {
+            await axios.get('/api/v1/currencies?all=true').then((res) => {
                 this.currencies = res.data.data;
             });
         },
         async getUnits() {
             await this.getToken();
-            await axios.get('/api/v1/units').then((res) => {
+            await axios.get('/api/v1/units?all=true').then((res) => {
                 this.units = res.data.data;
             });
         },
         async getTaxes() {
             await this.getToken();
-            await axios.get('/api/v1/taxes').then((res) => {
+            await axios.get('/api/v1/taxes?all=true').then((res) => {
                 this.taxes = res.data.data;
             });
         }

@@ -22,13 +22,23 @@ class CurrencyController extends Controller
      */
     public function index()
     {
-        $currencies = Currency::when(request()->has('search'), function ($query) {
-            $query->where('name', 'like', '%' . request()->search . '%');
-        })->when(request()->has('sort'), function ($query) {
-            $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        if (request()->has('all') && request()->all == 'true') {
+            $list = Currency::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->get();
 
-        return CurrencyResource::collection($currencies);
+            return CurrencyResource::collection($list);
+        } else {
+            $currencies = Currency::when(request()->has('search'), function ($query) {
+                $query->where('name', 'like', '%' . request()->search . '%');
+            })->when(request()->has('sort'), function ($query) {
+                $query->orderBy(request()->order, request()->sort);
+            })->paginate(5);
+
+            return CurrencyResource::collection($currencies);
+        }
     }
 
     public function trash()
@@ -95,7 +105,7 @@ class CurrencyController extends Controller
             $currency->symbol = $request->symbol;
             $currency->save();
 
-            Log::info('Currency ID no: '. $currency->id . ', has updated!');
+            Log::info('Currency ID no: ' . $currency->id . ', has updated!');
 
             return response()->json(['message' => 'Currency has been updated successfully!']);
         } catch (\Throwable $th) {
@@ -116,7 +126,7 @@ class CurrencyController extends Controller
         try {
             $currency->delete();
 
-            Log::info('Currency ID no: '. $currency->id . ', has deleted!');
+            Log::info('Currency ID no: ' . $currency->id . ', has deleted!');
 
             return response()->json(['message' => 'Currency has been deleted successfully!']);
         } catch (\Throwable $th) {
@@ -138,7 +148,7 @@ class CurrencyController extends Controller
             $currency = Currency::onlyTrashed()->where('id', $id)->first();
             $currency->restore();
 
-            Log::info('Currency ID no: '. $currency->id . ', has restored!');
+            Log::info('Currency ID no: ' . $currency->id . ', has restored!');
 
             return response()->json(['message' => 'Currency has been restored successfully!']);
         } catch (\Throwable $th) {
@@ -160,7 +170,7 @@ class CurrencyController extends Controller
             $currency = Currency::onlyTrashed()->where('id', $id)->first();
             $currency->forceDelete();
 
-            Log::info('Currency ID no: '. $currency->id . ', has force deleted!');
+            Log::info('Currency ID no: ' . $currency->id . ', has force deleted!');
 
             return response()->json(['message' => 'Currency has been deleted successfully!']);
         } catch (\Throwable $th) {
