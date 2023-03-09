@@ -40,7 +40,7 @@ onMounted(async () => {
 });
 
 const form = ref({
-    logo: defaultLogo.value,
+    logo: null,
     name: props.isEdit && props.company.name !== null ? props.company.name : '',
     owner: props.isEdit && props.company.owner !== null ? props.company.owner : '',
     tel_number: props.isEdit && props.company.tel_number !== null ? props.company.tel_number : '',

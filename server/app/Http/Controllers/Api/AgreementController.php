@@ -43,7 +43,7 @@ class AgreementController extends Controller
                     });
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
-            })->paginate(5);
+            })->fastPaginate(5);
 
             return AgreementResource::collection($paginateList);
         }
@@ -57,7 +57,7 @@ class AgreementController extends Controller
             $query->where('name', 'like', '%' . request()->search . '%');
         })->when(request()->has('sort'), function ($query) {
             $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        })->fastPaginate(5);
 
         return AgreementResource::collection($paginateList);
     }

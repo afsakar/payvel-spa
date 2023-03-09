@@ -135,6 +135,21 @@ const router = createRouter({
                     component: () => import('@/views/pages/waybill/Trash.vue')
                 },
                 {
+                    path: '/invoices',
+                    name: 'invoices.index',
+                    component: () => import('@/views/pages/invoice/List.vue')
+                },
+                {
+                    path: '/invoices/:invoiceID/items',
+                    name: 'invoices.items',
+                    component: () => import('@/views/pages/invoice/ItemList.vue')
+                },
+                {
+                    path: '/invoices/trash',
+                    name: 'invoices.trash',
+                    component: () => import('@/views/pages/invoice/Trash.vue')
+                },
+                {
                     path: '/categories',
                     name: 'categories.index',
                     component: () => import('@/views/pages/category/List.vue')

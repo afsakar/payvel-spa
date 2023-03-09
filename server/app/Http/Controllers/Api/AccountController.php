@@ -33,7 +33,7 @@ class AccountController extends Controller
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
-            })->paginate(5);
+            })->fastPaginate(5);
 
             return AccountResource::collection($accounts);
         }
@@ -45,7 +45,7 @@ class AccountController extends Controller
             $query->where('name', 'like', '%' . request()->search . '%');
         })->when(request()->has('sort'), function ($query) {
             $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        })->fastPaginate(5);
 
         return AccountResource::collection($deletedAccounts);
     }

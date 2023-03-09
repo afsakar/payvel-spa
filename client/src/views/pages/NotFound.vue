@@ -23,7 +23,7 @@ const logoUrl = computed(() => {
                     <span class="text-blue-500 font-bold text-3xl">404</span>
                     <h1 class="text-900 font-bold text-3xl lg:text-5xl mb-2">Not Found</h1>
                     <div class="text-600 mb-5">Requested resource is not available.</div>
-                    <a @click="$router.go(-1)" class="font-bold text-blue-500 cursor-pointer">Go to Dashboard</a>
+                    <a @click="$router.go(-1)" class="font-bold text-blue-500 cursor-pointer">Go back</a>
                 </div>
             </div>
         </div>

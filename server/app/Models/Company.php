@@ -32,4 +32,9 @@ class Company extends Model
     {
         return $this->hasMany(Waybill::class);
     }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

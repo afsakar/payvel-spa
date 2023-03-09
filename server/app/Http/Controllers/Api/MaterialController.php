@@ -28,7 +28,7 @@ class MaterialController extends Controller
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
-            })->paginate(5);
+            })->fastPaginate(5);
 
             return MaterialResource::collection($materials);
         }
@@ -40,7 +40,7 @@ class MaterialController extends Controller
             $query->where('name', 'like', '%' . request()->search . '%');
         })->when(request()->has('sort'), function ($query) {
             $query->orderBy(request()->order, request()->sort);
-        })->paginate(5);
+        })->fastPaginate(5);
 
         return MaterialResource::collection($currencies);
     }

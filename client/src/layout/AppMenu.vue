@@ -81,6 +81,11 @@ const model = ref([
                 label: 'Transactions',
                 icon: 'ti pi-fw ti-arrows-diff',
                 items: [{ label: 'Categories', to: '/categories' }]
+            },
+            {
+                label: 'Sales',
+                icon: 'ti pi-fw ti-transfer-in',
+                items: [{ label: 'Invoices', to: '/invoices' }]
             }
         ]
     }

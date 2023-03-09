@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Invoice;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Waybill\WaybillStoreRequest;
-use App\Http\Requests\Waybill\WaybillUpdateRequest;
-use App\Http\Resources\WaybillResource;
+use App\Http\Requests\Invoice\InvoiceStoreRequest;
+use App\Http\Requests\Invoice\InvoiceUpdateRequest;
+use App\Http\Resources\InvoiceResource;
 use App\Models\Company;
+use App\Models\InvoiceItem;
 use App\Models\Waybill;
 use App\Models\WaybillItem;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class WaybillController extends Controller
+class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,9 +27,9 @@ class WaybillController extends Controller
         $company = Company::withTrashed()->findOrFail($id);
 
         if (request()->has('all') && request()->all == 'true') {
-            $waybills = $company->waybills()->with('corporation');
+            $invoices = $company->invoices()->with(['corporation', 'waybill', 'withholding']);
 
-            $paginateList = $waybills->when(request()->has('search'), function ($query) {
+            $paginateList = $invoices->when(request()->has('search'), function ($query) {
                 $query->where('number', 'like', '%' . request()->search . '%')
                     ->orWhereHas('corporation', function ($query) {
                         $query->where('name', 'like', '%' . request()->search . '%');
@@ -36,11 +38,11 @@ class WaybillController extends Controller
                 $query->orderBy(request()->order, request()->sort);
             })->get();
 
-            return WaybillResource::collection($paginateList);
+            return InvoiceResource::collection($paginateList);
         } else {
-            $waybills = $company->waybills()->with('corporation');
+            $invoices = $company->invoices()->with(['corporation', 'waybill', 'withholding']);
 
-            $paginateList = $waybills->when(request()->has('search'), function ($query) {
+            $paginateList = $invoices->when(request()->has('search'), function ($query) {
                 $query->where('number', 'like', '%' . request()->search . '%')
                     ->orWhereHas('corporation', function ($query) {
                         $query->where('name', 'like', '%' . request()->search . '%');
@@ -49,21 +51,21 @@ class WaybillController extends Controller
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
 
-            return WaybillResource::collection($paginateList);
+            return InvoiceResource::collection($paginateList);
         }
     }
 
     public function trash(Company $company)
     {
-        $waybills = $company->waybills()->onlyTrashed()->with('corporation');
+        $invoices = $company->invoices()->onlyTrashed()->with(['corporation', 'waybill', 'withholding']);
 
-        $paginateList = $waybills->when(request()->has('search'), function ($query) {
+        $paginateList = $invoices->when(request()->has('search'), function ($query) {
             $query->where('number', 'like', '%' . request()->search . '%');
         })->when(request()->has('sort'), function ($query) {
             $query->orderBy(request()->order, request()->sort);
         })->fastPaginate(5);
 
-        return WaybillResource::collection($paginateList);
+        return InvoiceResource::collection($paginateList);
     }
 
     /**
@@ -72,27 +74,27 @@ class WaybillController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(WaybillStoreRequest $request)
+    public function store(InvoiceStoreRequest $request)
     {
         try {
             DB::transaction(function () use ($request) {
-                $waybill = Waybill::create($request->validated());
+                $invoice = Invoice::create($request->validated());
 
-                Log::info('Waybill created successfully', [
-                    'waybill' => $waybill,
+                Log::info('Invoice created successfully', [
+                    'invoice' => $invoice,
                 ]);
 
                 return response()->json([
-                    'message' => 'Waybill created successfully'
+                    'message' => 'Invoice created successfully'
                 ], 201);
             });
         } catch (\Throwable $th) {
-            Log::error('Error creating waybill', [
+            Log::error('Error creating invoice', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error creating waybill'
+                'message' => 'Error creating invoice'
             ], 500);
         }
     }
@@ -100,43 +102,43 @@ class WaybillController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Invoice  $invoice
      * @return \Illuminate\Http\Response
      */
-    public function show($waybill)
+    public function show($invoice)
     {
-        $waybill = Waybill::with('company', 'corporation', 'items.material.unit')->where('id', $waybill)->first();
-        return new WaybillResource($waybill);
+        $invoice = Invoice::with(['company', 'corporation', 'waybill', 'withholding'])->where('id', $invoice)->first();
+        return new InvoiceResource($invoice);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Invoice  $invoice
      * @return \Illuminate\Http\Response
      */
-    public function update(WaybillUpdateRequest $request, Waybill $waybill)
+    public function update(InvoiceUpdateRequest $request, Invoice $invoice)
     {
         try {
-            DB::transaction(function () use ($request, $waybill) {
-                $waybill->update($request->validated());
+            DB::transaction(function () use ($request, $invoice) {
+                $invoice->update($request->validated());
 
-                Log::info('Waybill updated successfully', [
-                    'waybill' => $waybill,
+                Log::info('Invoice updated successfully', [
+                    'invoice' => $invoice,
                 ]);
 
                 return response()->json([
-                    'message' => 'Waybill updated successfully'
+                    'message' => 'Invoice updated successfully'
                 ], 201);
             });
         } catch (\Throwable $th) {
-            Log::error('Error updating waybill', [
+            Log::error('Error updating invoice', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error updating waybill'
+                'message' => 'Error updating invoice'
             ], 500);
         }
     }
@@ -144,28 +146,28 @@ class WaybillController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Invoice  $invoice
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Waybill $waybill)
+    public function destroy(Invoice $invoice)
     {
         try {
-            $waybill->delete();
+            $invoice->delete();
 
-            Log::info('Waybill deleted successfully', [
-                'waybill' => $waybill,
+            Log::info('Invoice deleted successfully', [
+                'waybill' => $invoice,
             ]);
 
             return response()->json([
-                'message' => 'Waybill deleted successfully'
+                'message' => 'Invoice deleted successfully'
             ], 201);
         } catch (\Throwable $th) {
-            Log::error('Error deleting waybill', [
+            Log::error('Error deleting invoice', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error deleting waybill'
+                'message' => 'Error deleting invoice'
             ], 500);
         }
     }
@@ -173,23 +175,23 @@ class WaybillController extends Controller
     public function restore($id)
     {
         try {
-            $waybill = Waybill::onlyTrashed()->findOrFail($id);
-            $waybill->restore();
+            $invoice = Invoice::onlyTrashed()->findOrFail($id);
+            $invoice->restore();
 
-            Log::info('Waybill restored successfully', [
-                'waybill' => $waybill,
+            Log::info('Invoice restored successfully', [
+                'invoice' => $invoice,
             ]);
 
             return response()->json([
-                'message' => 'Waybill restored successfully'
+                'message' => 'Invoice restored successfully'
             ], 201);
         } catch (\Throwable $th) {
-            Log::error('Error restoring waybill', [
+            Log::error('Error restoring invoice', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error restoring waybill'
+                'message' => 'Error restoring invoice'
             ], 500);
         }
     }
@@ -197,33 +199,34 @@ class WaybillController extends Controller
     public function forceDelete($id)
     {
         try {
-            $waybill = Waybill::onlyTrashed()->findOrFail($id);
-            $waybill->items()->forceDelete();
-            $waybill->forceDelete();
+            $invoice = Invoice::onlyTrashed()->findOrFail($id);
+            // $invoice->items()->forceDelete();
+            $invoice->forceDelete();
 
-            Log::info('Waybill force deleted successfully', [
-                'waybill' => $waybill,
+            Log::info('Invoice force deleted successfully', [
+                'invoice' => $invoice,
             ]);
 
             return response()->json([
-                'message' => 'Waybill force deleted successfully'
+                'message' => 'Invoice force deleted successfully'
             ], 201);
         } catch (\Throwable $th) {
-            Log::error('Error force deleting waybill', [
+            Log::error('Error force deleting invoice', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error force deleting waybill'
+                'message' => 'Error force deleting invoice'
             ], 500);
         }
     }
 
-    public function saveWaybillItems(Request $request, $id)
+    public function saveInvoiceItems(Request $request, $id)
     {
-
         $request->merge([
-            'items' => json_decode($request->items, true)
+            'items' => json_decode($request->items, true),
+            'waybill_id' => $request->waybill_id ?? '',
+            'discount' => $request->discount ?? ''
         ]);
 
         $request->validate([
@@ -232,16 +235,31 @@ class WaybillController extends Controller
             'items.*.material_id' => 'required|integer',
             'items.*.quantity' => 'required|integer',
             'items.*.price' => 'required|numeric',
-            'items.*.waybill_id' => 'required|integer',
+            'items.*.invoice_id' => 'required|integer',
+            'waybill_id' => 'required|integer',
         ]);
 
 
         try {
             DB::transaction(function () use ($request, $id) {
-                $waybill = Waybill::findOrFail($id);
+                $invoice = Invoice::findOrFail($id);
+                $invoice->items()->delete();
+
+                $waybill = Waybill::findOrFail($request->waybill_id);
                 $waybill->items()->delete();
 
+                $invoice->update([
+                    'discount' => $request->discount ?? $invoice->discount,
+                ]);
+
                 foreach ($request->items as $item) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'material_id' => $item['material_id'],
+                        'quantity' => $item['quantity'],
+                        'price' => $item['price'],
+                    ]);
+
                     WaybillItem::create([
                         'waybill_id' => $waybill->id,
                         'material_id' => $item['material_id'],
@@ -250,21 +268,21 @@ class WaybillController extends Controller
                     ]);
                 }
 
-                Log::info('Waybill items saved successfully', [
-                    'waybill' => $waybill,
+                Log::info('Invoice items saved successfully', [
+                    'invoice' => $invoice,
                 ]);
 
                 return response()->json([
-                    'message' => 'Waybill items saved successfully'
+                    'message' => 'Invoice items saved successfully'
                 ], 201);
             });
         } catch (\Throwable $th) {
-            Log::error('Error saving waybill items', [
+            Log::error('Error saving invoice items', [
                 'error' => $th->getMessage()
             ]);
 
             return response()->json([
-                'message' => 'Error saving waybill items'
+                'message' => 'Error saving invoice items'
             ], 500);
         }
     }

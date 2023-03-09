@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Waybill;
+namespace App\Http\Requests\Invoice;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class WaybillStoreRequest extends FormRequest
+class InvoiceUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,14 +24,15 @@ class WaybillStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'number' => 'required|string|min:5|unique:waybills,number',
+            'number' => 'required|string|min:5|unique:invoices,number,' . $this->invoice->id,
             'company_id' => 'required|integer',
             'corporation_id' => 'required|integer',
-            'address' => 'required|string',
+            'withholding_id' => 'required|integer',
+            'waybill_id' => 'required|integer',
+            'notes' => 'nullable|string',
             'status' => 'required|string',
-            'content' => 'required|string',
-            'due_date' => 'nullable|date',
-            'waybill_date' => 'nullable|date',
+            'issue_date' => 'nullable|date',
+            'discount' => 'nullable|numeric',
         ];
     }
 
@@ -41,9 +42,12 @@ class WaybillStoreRequest extends FormRequest
             'number' => 'Number',
             'company_id' => 'Company',
             'corporation_id' => 'Corporation',
-            'address' => 'Address',
+            'withholding_id' => 'Withholding',
+            'waybill_id' => 'Waybill',
+            'notes' => 'Notes',
             'status' => 'Status',
-            'content' => 'Content',
+            'issue_date' => 'Issue Date',
+            'discount' => 'Discount',
         ];
     }
 }

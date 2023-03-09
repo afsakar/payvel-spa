@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class WaybillItem extends Model
+class InvoiceItem extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'waybill_id',
+        'invoice_id',
         'material_id',
         'quantity',
         'price',
@@ -21,9 +21,9 @@ class WaybillItem extends Model
         'tax_rate',
     ];
 
-    public function waybill()
+    public function invoice()
     {
-        return $this->belongsTo(Waybill::class);
+        return $this->belongsTo(Invoice::class);
     }
 
     public function material()

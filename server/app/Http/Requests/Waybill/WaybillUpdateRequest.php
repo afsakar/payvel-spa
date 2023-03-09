@@ -38,6 +38,7 @@ class WaybillUpdateRequest extends FormRequest
     public function attributes()
     {
         return [
+            'number' => 'Number',
             'company_id' => 'Company',
             'corporation_id' => 'Corporation',
             'address' => 'Address',
