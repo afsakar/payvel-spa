@@ -83,6 +83,11 @@ const model = ref([
                 label: 'Sales',
                 icon: 'ti pi-fw ti-transfer-in',
                 items: [{ label: 'Invoices', to: '/invoices' }]
+            },
+            {
+                label: 'Purchases',
+                icon: 'ti pi-fw ti-transfer-out',
+                items: [{ label: 'Bills', to: '/bills' }]
             }
         ]
     }

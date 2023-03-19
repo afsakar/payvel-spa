@@ -42,7 +42,17 @@ class Waybill extends Model
     {
         return $this->hasMany(WaybillItem::class);
     }
-    
+
+    public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
     protected static function booted(): void
     {
         static::addGlobalScope(new CompanyScope);

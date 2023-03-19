@@ -150,6 +150,21 @@ const router = createRouter({
                     component: () => import('@/views/pages/invoice/Trash.vue')
                 },
                 {
+                    path: '/bills',
+                    name: 'bills.index',
+                    component: () => import('@/views/pages/bill/List.vue')
+                },
+                {
+                    path: '/bills/:billID/items',
+                    name: 'bills.items',
+                    component: () => import('@/views/pages/bill/ItemList.vue')
+                },
+                {
+                    path: '/bills/trash',
+                    name: 'bills.trash',
+                    component: () => import('@/views/pages/bill/Trash.vue')
+                },
+                {
                     path: '/categories',
                     name: 'categories.index',
                     component: () => import('@/views/pages/category/List.vue')

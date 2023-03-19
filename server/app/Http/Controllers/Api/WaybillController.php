@@ -25,11 +25,7 @@ class WaybillController extends Controller
         $company = Company::withTrashed()->findOrFail($id);
 
         if (request()->has('all') && request()->all == 'true') {
-            $waybills = $company->waybills()->with('corporation');
-
-            if(request()->has('corporation_id') && request()->corporation_id != 'null') {
-                $waybills = $waybills->where('corporation_id', request()->corporation_id);
-            }
+            $waybills = $company->waybills()->with('corporation')->whereDoesntHave('bills')->whereDoesntHave('invoices');
 
             $paginateList = $waybills->when(request()->has('search'), function ($query) {
                 $query->where('number', 'like', '%' . request()->search . '%')
