@@ -1,14 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
+import { selectedCompany } from '@/composables/utils';
 
 import AppMenuItem from './AppMenuItem.vue';
 import { useCompanyStore } from '@/composables/company';
 import router from '@/router';
-
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 
 const company = useCompanyStore();
 

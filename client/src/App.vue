@@ -9,7 +9,7 @@ useHead({
     link: [
         {
             rel: 'stylesheet',
-            href: `/themes/lara-light-indigo/theme.css`
+            href: `/themes/bootstrap4-dark-blue/theme.css`
         }
     ]
 });

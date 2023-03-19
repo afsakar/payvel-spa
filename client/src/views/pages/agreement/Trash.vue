@@ -1,11 +1,12 @@
 <script setup>
 import { useAgreementStore } from '@/composables/agreement';
-import { onMounted, ref, watch, computed } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useHead } from '@unhead/vue';
 import { Bootstrap5Pagination } from 'laravel-vue-pagination';
 import axios from 'axios';
+import { selectedCompany } from '@/composables/utils';
 
 useHead({
     title: 'Deleted Agreements List'
@@ -23,9 +24,6 @@ const agreementStore = useAgreementStore();
 const deletedList = ref([]);
 const loading = ref(false);
 const checkMeta = ref(false); // check if there is more data to load
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 
 onMounted(async () => {
     await getList();

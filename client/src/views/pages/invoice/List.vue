@@ -1,12 +1,13 @@
 <script setup>
 import Create from '@/views/pages/invoice/CreateEditModal.vue';
 import { useInvoiceStore } from '@/composables/invoice';
-import { onMounted, ref, watch, computed } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useConfirm } from 'primevue/useconfirm';
 import { useToast } from 'primevue/usetoast';
 import { useHead } from '@unhead/vue';
 import { Bootstrap5Pagination } from 'laravel-vue-pagination';
 import axios from 'axios';
+import { dateFormat, selectedCompany } from '@/composables/utils';
 
 useHead({
     title: 'Invoices List'
@@ -15,7 +16,7 @@ useHead({
 const filters = ref({
     search: '',
     sort: 'asc',
-    orderBy: 'number'
+    orderBy: 'issue_date'
 });
 
 const toast = useToast();
@@ -27,9 +28,6 @@ const isEdit = ref(false);
 const loading = ref(false);
 const showModal = ref(false);
 const checkMeta = ref(false); // check if there is more data to load
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 
 onMounted(async () => {
     await getList();
@@ -137,6 +135,14 @@ function deleteItem(event, id) {
                 </div>
             </template>
 
+            <Column field="issue_date" width="100" style="width: 10%; min-width: 10rem">
+                <template #header>
+                    <SortIcon @click="sortItem('issue_date')" name="Issue Date" column="issue_date" :sort="filters.sort" :active-column="filters.orderBy" />
+                </template>
+                <template #body="slotProps">
+                    <span>{{ dateFormat(slotProps.data.issue_date) }}</span>
+                </template>
+            </Column>
             <Column field="number">
                 <template #header>
                     <SortIcon @click="sortItem('number')" name="Number" column="number" :sort="filters.sort" :active-column="filters.orderBy" />
@@ -171,6 +177,7 @@ function deleteItem(event, id) {
                     <span v-else>-</span>
                 </template>
             </Column>
+            <Column field="total_amount" header="Total" width="100" style="width: 10%; min-width: 8rem"></Column>
             <Column header="" width="100" style="width: 20%; min-width: 12rem" bodyStyle="text-align:center">
                 <template #body="slotProps">
                     <div>

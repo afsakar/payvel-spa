@@ -7,6 +7,7 @@ import { useToast } from 'primevue/usetoast';
 import { useHead } from '@unhead/vue';
 import { Bootstrap5Pagination } from 'laravel-vue-pagination';
 import axios from 'axios';
+import { selectedCompany } from '@/composables/utils';
 
 useHead({
     title: 'Company List'
@@ -27,7 +28,6 @@ const isEdit = ref(false);
 const loading = ref(false);
 const showModal = ref(false);
 const checkMeta = ref(false); // check if there is more data to load
-const selectedCompany = JSON.parse(localStorage.getItem('selectedCompany'));
 
 onMounted(async () => {
     await getList();

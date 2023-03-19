@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useInvoiceStore } from '@/composables/invoice';
 import { useToast } from 'primevue/usetoast';
 import Editor from 'primevue/editor';
 import axios from 'axios';
+import { selectedCompany } from '@/composables/utils';
 
 const props = defineProps({
     invoice: {
@@ -19,9 +20,6 @@ const props = defineProps({
 });
 
 const invoiceStore = useInvoiceStore();
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 const toast = useToast();
 const formData = ref(new FormData());
 const emit = defineEmits(['toggleModal']);
@@ -57,10 +55,20 @@ const form = ref({
 });
 
 async function getWaybills() {
-    await axios.get(`/api/v1/waybills/${selectedCompany.value.id}?all=true`).then((res) => {
+    await axios.get(`/api/v1/waybills/${selectedCompany.value.id}?all=true&corporation_id=${form.value.corporation_id}`).then((res) => {
         waybillList.value = res.data.data;
     });
 }
+
+watch(
+    form.value,
+    async () => {
+        if (form.value.corporation_id !== '') {
+            await getWaybills({ target: { value: form.value.corporation_id } });
+        }
+    },
+    { deep: true }
+);
 
 const submit = async () => {
     formData.value.append('number', form.value.number);
@@ -157,13 +165,33 @@ const submit = async () => {
 
         <div class="field col-12 m-0">
             <label>Corporation</label>
-            <Dropdown :options="invoiceStore.corporationsList" :virtualScrollerOptions="{ itemSize: 38 }" :filter="true" option-label="name" option-value="id" class="w-full" placeholder="Select Corporation" v-model="form.corporation_id" />
+            <Dropdown
+                @change="getWaybills($event)"
+                :options="invoiceStore.corporationsList"
+                :virtualScrollerOptions="{ itemSize: 38 }"
+                :filter="true"
+                option-label="name"
+                option-value="id"
+                class="w-full"
+                placeholder="Select Corporation"
+                v-model="form.corporation_id"
+            />
             <span v-if="invoiceStore.errors.corporation_id" id="currency_id" class="block p-error">{{ invoiceStore.errors.corporation_id[0] }}</span>
         </div>
 
         <div class="field md:col-6 col-12 m-0">
             <label>Waybill</label>
-            <Dropdown :options="waybillList" :virtualScrollerOptions="{ itemSize: 38 }" :filter="true" option-label="number" option-value="id" class="w-full" placeholder="Select Waybill" v-model="form.waybill_id" />
+            <Dropdown
+                :disabled="form.corporation_id === ''"
+                :options="waybillList"
+                :virtualScrollerOptions="{ itemSize: 38 }"
+                :filter="true"
+                option-label="number"
+                option-value="id"
+                class="w-full"
+                placeholder="Select Waybill"
+                v-model="form.waybill_id"
+            />
             <span v-if="invoiceStore.errors.waybill_id" id="waybill_id" class="block p-error">{{ invoiceStore.errors.waybill_id[0] }}</span>
         </div>
 

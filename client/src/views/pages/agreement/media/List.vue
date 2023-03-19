@@ -3,12 +3,10 @@ import { useAgreementStore } from '@/composables/agreement';
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
+import { selectedCompany } from '@/composables/utils';
 
 const route = useRoute();
 const agreementID = route.params.agreementID;
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 const mediaList = ref([]);
 
 const toast = useToast();

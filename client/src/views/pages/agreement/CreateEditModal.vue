@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useAgreementStore } from '@/composables/agreement';
 import { useToast } from 'primevue/usetoast';
 import Editor from 'primevue/editor';
+import { selectedCompany } from '@/composables/utils';
 
 const props = defineProps({
     agreement: {
@@ -18,9 +19,6 @@ const props = defineProps({
 });
 
 const agreementStore = useAgreementStore();
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 const toast = useToast();
 const formData = ref(new FormData());
 const emit = defineEmits(['toggleModal']);

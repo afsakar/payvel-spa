@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useWaybillStore } from '@/composables/waybill';
 import { useToast } from 'primevue/usetoast';
 import Editor from 'primevue/editor';
+import { selectedCompany } from '@/composables/utils';
 
 const props = defineProps({
     waybill: {
@@ -18,9 +19,6 @@ const props = defineProps({
 });
 
 const waybillStore = useWaybillStore();
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 const toast = useToast();
 const formData = ref(new FormData());
 const emit = defineEmits(['toggleModal']);

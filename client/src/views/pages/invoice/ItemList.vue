@@ -4,7 +4,7 @@ import { onMounted, ref, computed } from 'vue';
 import { useHead } from '@unhead/vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-import { formatPrice, formatPhoneNumber, dateFormat } from '@/composables/utils';
+import { formatPrice, formatPhoneNumber, dateFormat, selectedCompany } from '@/composables/utils';
 import { useToast } from 'primevue/usetoast';
 
 useHead({
@@ -12,9 +12,6 @@ useHead({
 });
 
 const toast = useToast();
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 const route = useRoute();
 const invoiceStore = useInvoiceStore();
 const loading = ref(false);
@@ -28,7 +25,7 @@ const invoiceItems = ref([]);
 onMounted(async () => {
     loading.value = true;
     await invoiceStore.getInvoice(invoiceID);
-    await invoiceStore.getMaterials();
+    await invoiceStore.getMaterials(`&currency_id=${invoiceStore.invoice.data.corporation.currency_id}`);
     invoice.value = invoiceStore.invoice.data;
     items.value = invoiceStore.invoice.data.waybill.items;
     withholding.value = invoiceStore.invoice.data.withholding;
@@ -114,15 +111,20 @@ const totalWithholding = computed(() => {
     return (totalTax.value * withholding.value?.rate) / 100;
 });
 
-// filter tax list by material
-
+// filter tax list by material group by tax
 const filteredTaxList = computed(() => {
-    return materials.value.map((material) => {
-        return {
-            tax: material.tax.rate
-        };
+    let taxList = [];
+    invoiceItems.value.forEach((item) => {
+        const material = materials.value.find((material) => material.id === item.material_id);
+        if (material) {
+            taxList.push({
+                tax: material.tax.rate
+            });
+        }
     });
+    return taxList.filter((tax, index, self) => self.findIndex((t) => t.tax === tax.tax) === index);
 });
+
 const taxSumList = computed(() => {
     let taxList = [];
     filteredTaxList.value.forEach((tax) => {
@@ -155,6 +157,10 @@ const taxSumList = computed(() => {
             </RouterLink>
         </template>
     </Toolbar>
+
+    <Message severity="info" :closable="false">
+        <span>If you make changes to the items, the relevant waybill will change accordingly!</span>
+    </Message>
 
     <div class="card mb-5" ref="printTemplate">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: 0.5em" />
@@ -222,6 +228,7 @@ const taxSumList = computed(() => {
                         <template #body="slotProps">
                             <Dropdown
                                 :virtualScrollerOptions="{ itemSize: 38 }"
+                                :filter="true"
                                 :options="materials"
                                 optionValue="id"
                                 v-model="invoiceItems[slotProps.index].material_id"

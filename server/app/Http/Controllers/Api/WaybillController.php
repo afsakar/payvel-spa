@@ -27,6 +27,10 @@ class WaybillController extends Controller
         if (request()->has('all') && request()->all == 'true') {
             $waybills = $company->waybills()->with('corporation');
 
+            if(request()->has('corporation_id') && request()->corporation_id != 'null') {
+                $waybills = $waybills->where('corporation_id', request()->corporation_id);
+            }
+
             $paginateList = $waybills->when(request()->has('search'), function ($query) {
                 $query->where('number', 'like', '%' . request()->search . '%')
                     ->orWhereHas('corporation', function ($query) {
@@ -198,7 +202,7 @@ class WaybillController extends Controller
     {
         try {
             $waybill = Waybill::onlyTrashed()->findOrFail($id);
-            $waybill->items()->forceDelete();
+            $waybill->items()->delete();
             $waybill->forceDelete();
 
             Log::info('Waybill force deleted successfully', [

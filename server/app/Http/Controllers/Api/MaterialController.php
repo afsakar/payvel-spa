@@ -20,9 +20,16 @@ class MaterialController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
-            $materials = Material::all();
+
+            if(request()->has('currency_id') && request()->currency_id != 'null')
+            {
+                $materials = Material::where('currency_id', request()->currency_id)->get();
+            }else {
+                $materials = Material::all();
+            }
 
             return MaterialResource::collection($materials);
+
         } else {
             $materials = Material::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');

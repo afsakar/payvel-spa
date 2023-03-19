@@ -4,7 +4,7 @@ import { onMounted, ref, computed } from 'vue';
 import { useHead } from '@unhead/vue';
 import { useRoute } from 'vue-router';
 import axios from 'axios';
-import { formatPrice, formatPhoneNumber, dateFormat } from '@/composables/utils';
+import { formatPrice, formatPhoneNumber, dateFormat, selectedCompany } from '@/composables/utils';
 import { useToast } from 'primevue/usetoast';
 
 useHead({
@@ -12,9 +12,6 @@ useHead({
 });
 
 const toast = useToast();
-const selectedCompany = computed(() => {
-    return JSON.parse(localStorage.getItem('selectedCompany'));
-});
 const route = useRoute();
 const waybillStore = useWaybillStore();
 const loading = ref(false);
@@ -29,7 +26,7 @@ const waybillItems = ref([]);
 onMounted(async () => {
     loading.value = true;
     await waybillStore.getWaybill(waybillID);
-    await waybillStore.getMaterials('all=true');
+    await waybillStore.getMaterials(`&currency_id=${waybillStore.waybill.data.corporation.currency_id}`);
     waybill.value = waybillStore.waybill.data;
     items.value = waybillStore.waybill.data.items;
 
@@ -174,6 +171,7 @@ const submit = async () => {
                         <template #body="slotProps">
                             <Dropdown
                                 :virtualScrollerOptions="{ itemSize: 38 }"
+                                :filter="true"
                                 :options="materials"
                                 optionValue="id"
                                 v-model="waybillItems[slotProps.index].material_id"

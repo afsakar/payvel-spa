@@ -80,6 +80,17 @@ class InvoiceController extends Controller
             DB::transaction(function () use ($request) {
                 $invoice = Invoice::create($request->validated());
 
+                $waybill = Waybill::findOrFail($request->waybill_id)->load('items');
+
+                foreach ($waybill->items as $item) {
+                    InvoiceItem::create([
+                        'invoice_id' => $invoice->id,
+                        'material_id' => $item->material_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->price
+                    ]);
+                }
+
                 Log::info('Invoice created successfully', [
                     'invoice' => $invoice,
                 ]);
@@ -122,6 +133,21 @@ class InvoiceController extends Controller
     {
         try {
             DB::transaction(function () use ($request, $invoice) {
+                if ($invoice->waybill_id != $request->waybill_id) {
+                    $invoice->items()->delete();
+
+                    $waybill = Waybill::findOrFail($request->waybill_id)->load('items');
+
+                    foreach ($waybill->items as $item) {
+                        InvoiceItem::create([
+                            'invoice_id' => $invoice->id,
+                            'material_id' => $item->material_id,
+                            'quantity' => $item->quantity,
+                            'price' => $item->price
+                        ]);
+                    }
+                }
+
                 $invoice->update($request->validated());
 
                 Log::info('Invoice updated successfully', [
@@ -200,7 +226,7 @@ class InvoiceController extends Controller
     {
         try {
             $invoice = Invoice::onlyTrashed()->findOrFail($id);
-            // $invoice->items()->forceDelete();
+            $invoice->items()->delete();
             $invoice->forceDelete();
 
             Log::info('Invoice force deleted successfully', [

@@ -99,9 +99,9 @@ export const useWaybillStore = defineStore('waybill', {
                 this.corporations = res.data.data;
             });
         },
-        async getMaterials() {
+        async getMaterials(query = null) {
             await this.getToken();
-            await axios.get(`/api/v1/materials?all=true`).then((res) => {
+            await axios.get(`/api/v1/materials?all=true${query}`).then((res) => {
                 this.materials = res.data.data;
             });
         },

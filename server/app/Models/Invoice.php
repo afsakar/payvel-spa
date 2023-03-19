@@ -29,6 +29,7 @@ class Invoice extends Model
 
     public $appends = [
         'waybill_items',
+        'total_amount',
     ];
 
     public function company()
@@ -56,7 +57,22 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    // waybill items
+    public function getTotalAmountAttribute()
+    {
+        $sum = $this->items->sum(function ($item) {
+            return $item->quantity * $item->price;
+        });
+
+        $totalTax = $this->items->sum(function ($item) {
+            return $item->quantity * $item->price * $item->tax_rate / 100;
+        });
+
+        $total = $sum + $totalTax - $this->discount - ($totalTax * $this->withholding->rate / 100);
+
+        $totalWithCurrency = $this->corporation->currency->position == "before" ? $this->corporation->currency->symbol . ' ' . number_format($total, 2) : number_format($total, 2) . ' ' . $this->corporation->currency->symbol;
+
+        return $totalWithCurrency;
+    }
 
     public function getWaybillItemsAttribute()
     {

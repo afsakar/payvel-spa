@@ -1,3 +1,5 @@
+import { computed } from 'vue';
+
 export function formatPrice(price) {
     return price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
@@ -19,3 +21,7 @@ export function formatPhoneNumber(phoneNumberString) {
     }
     return null;
 }
+
+export const selectedCompany = computed(() => {
+    return JSON.parse(localStorage.getItem('selectedCompany'));
+});
