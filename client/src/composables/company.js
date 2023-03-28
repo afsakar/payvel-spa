@@ -23,7 +23,6 @@ export const useCompanyStore = defineStore('company', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getCompanies() {
-            await this.getToken();
             await axios.get('/api/v1/companies').then((res) => {
                 this.companies = res.data;
                 this.deletedCompanies = res.data.deletedCompanies;
@@ -31,7 +30,6 @@ export const useCompanyStore = defineStore('company', {
         },
         async selectCompany(company) {
             this.formErrors = [];
-            await this.getToken();
             if (localStorage.getItem('selectedCompany')) {
                 localStorage.removeItem('selectedCompany');
             }
@@ -45,14 +43,12 @@ export const useCompanyStore = defineStore('company', {
             await router.push({ name: 'SelectCompany' });
         },
         async getCompany(id) {
-            await this.getToken();
             await axios.get(`/api/v1/companies/${id}`).then((res) => {
                 this.company = res.data;
             });
         },
         async createCompany(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/companies', data)
                 .then((res) => {
@@ -71,7 +67,6 @@ export const useCompanyStore = defineStore('company', {
         },
         async updateCompany(data, id) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/companies/${id}`, data)
                 .then((res) => {
@@ -89,7 +84,6 @@ export const useCompanyStore = defineStore('company', {
                 });
         },
         async deleteCompany(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/companies/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCompanies();
@@ -97,7 +91,6 @@ export const useCompanyStore = defineStore('company', {
             });
         },
         async restoreCompany(id) {
-            await this.getToken();
             await axios.post(`/api/v1/companies/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCompanies();
@@ -105,7 +98,6 @@ export const useCompanyStore = defineStore('company', {
             });
         },
         async forceDeleteCompany(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/companies/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCompanies();

@@ -21,21 +21,18 @@ export const useWithholdingStore = defineStore('withholding', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getWithholdings() {
-            await this.getToken();
             await axios.get('/api/v1/withholdings').then((res) => {
                 this.withholdings = res.data;
                 this.deletedWithholdings = res.data.deletedWithholdings;
             });
         },
         async getWithholding(id) {
-            await this.getToken();
             await axios.get(`/api/v1/withholdings/${id}`).then((res) => {
                 this.withholding = res.data;
             });
         },
         async createWithholding(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/withholdings', data)
                 .then((res) => {
@@ -54,7 +51,6 @@ export const useWithholdingStore = defineStore('withholding', {
         },
         async updateWithholding(data, id) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/withholdings/${id}`, data)
                 .then((res) => {
@@ -72,7 +68,6 @@ export const useWithholdingStore = defineStore('withholding', {
                 });
         },
         async deleteWithholding(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/withholdings/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getWithholdings();
@@ -80,7 +75,6 @@ export const useWithholdingStore = defineStore('withholding', {
             });
         },
         async restoreWithholding(id) {
-            await this.getToken();
             await axios.post(`/api/v1/withholdings/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getWithholdings();
@@ -88,7 +82,6 @@ export const useWithholdingStore = defineStore('withholding', {
             });
         },
         async forceDeleteWithholding(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/withholdings/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getWithholdings();

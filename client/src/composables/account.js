@@ -25,26 +25,22 @@ export const useAccountStore = defineStore('account', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getAccounts() {
-            await this.getToken();
             await axios.get('/api/v1/accounts').then((res) => {
                 this.accounts = res.data;
             });
         },
         async getDeletedAccounts() {
-            await this.getToken();
             await axios.get('/api/v1/accounts/trash').then((res) => {
                 this.deletedAccounts = res.data;
             });
         },
         async getAccount(id) {
-            await this.getToken();
             await axios.get(`/api/v1/accounts/${id}`).then((res) => {
                 this.account = res.data;
             });
         },
         async createAccount(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/accounts', data)
                 .then((res) => {
@@ -63,7 +59,6 @@ export const useAccountStore = defineStore('account', {
         },
         async updateAccount(id, data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/accounts/${id}`, data)
                 .then((res) => {
@@ -81,7 +76,6 @@ export const useAccountStore = defineStore('account', {
                 });
         },
         async deleteAccount(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/accounts/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getAccounts();
@@ -89,7 +83,6 @@ export const useAccountStore = defineStore('account', {
             });
         },
         async restoreAccount(id) {
-            await this.getToken();
             await axios.post(`/api/v1/accounts/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getAccounts();
@@ -97,7 +90,6 @@ export const useAccountStore = defineStore('account', {
             });
         },
         async forceDeleteAccount(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/accounts/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getAccounts();
@@ -105,13 +97,11 @@ export const useAccountStore = defineStore('account', {
             });
         },
         async getAccountTypes() {
-            await this.getToken();
             await axios.get('/api/v1/account-types?all=true').then((res) => {
                 this.accountTypes = res.data.data;
             });
         },
         async getCurrencies() {
-            await this.getToken();
             await axios.get('/api/v1/currencies?all=true').then((res) => {
                 this.currencies = res.data.data;
             });

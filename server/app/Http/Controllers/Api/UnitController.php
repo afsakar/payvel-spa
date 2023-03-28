@@ -19,22 +19,15 @@ class UnitController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
-            $units = Unit::when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%');
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return UnitResource::collection($units);
+            $units = Unit::all();
         } else {
             $units = Unit::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return UnitResource::collection($units);
         }
+        return UnitResource::collection($units);
     }
 
     public function trash()

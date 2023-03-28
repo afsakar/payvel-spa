@@ -23,22 +23,15 @@ class CurrencyController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
-            $list = Currency::when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%');
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return CurrencyResource::collection($list);
+            $currencies = Currency::all();
         } else {
             $currencies = Currency::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return CurrencyResource::collection($currencies);
         }
+        return CurrencyResource::collection($currencies);
     }
 
     public function trash()

@@ -13,6 +13,17 @@ use Illuminate\Support\Facades\Log;
 
 class AccountController extends Controller
 {
+
+    /*
+
+     public function index()
+    {
+        $accounts = $this->optimizeQuery(Account::class, [], '-accounts', 5);
+
+        return AccountResource::collection($accounts);
+    }
+
+    */
     /**
      * Display a listing of the resource.
      *

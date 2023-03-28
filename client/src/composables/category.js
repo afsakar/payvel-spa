@@ -21,21 +21,18 @@ export const useCategoryStore = defineStore('category', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getCategories() {
-            await this.getToken();
             await axios.get('/api/v1/categories').then((res) => {
                 this.categories = res.data;
                 this.deletedCategories = res.data.deletedCategories;
             });
         },
         async getCategory(id) {
-            await this.getToken();
             await axios.get(`/api/v1/categories/${id}`).then((res) => {
                 this.category = res.data;
             });
         },
         async createCategory(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/categories', data)
                 .then((res) => {
@@ -54,7 +51,6 @@ export const useCategoryStore = defineStore('category', {
         },
         async updateCategory(id, data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/categories/${id}`, data)
                 .then((res) => {
@@ -72,7 +68,6 @@ export const useCategoryStore = defineStore('category', {
                 });
         },
         async deleteCategory(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/categories/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCategories();
@@ -80,7 +75,6 @@ export const useCategoryStore = defineStore('category', {
             });
         },
         async restoreCategory(id) {
-            await this.getToken();
             await axios.post(`/api/v1/categories/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCategories();
@@ -88,7 +82,6 @@ export const useCategoryStore = defineStore('category', {
             });
         },
         async forceDeleteCategory(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/categories/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCategories();

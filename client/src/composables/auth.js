@@ -49,11 +49,6 @@ export const useAuthStore = defineStore('auth', {
                     }
                 });
         },
-        // async getUser() {
-        //     await this.getToken();
-        //     const data = await axios.get('/api/user');
-        //     this.authUser = data.data;
-        // },
         async getUser() {
             await this.getToken();
             await axios

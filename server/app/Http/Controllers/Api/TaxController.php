@@ -21,22 +21,15 @@ class TaxController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
-            $taxes = Tax::when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%');
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return TaxResource::collection($taxes);
+            $taxes = Tax::all();
         } else {
             $taxes = Tax::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return TaxResource::collection($taxes);
         }
+        return TaxResource::collection($taxes);
     }
 
     public function trash()

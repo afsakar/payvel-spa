@@ -1,4 +1,5 @@
 import { computed } from 'vue';
+import axios from 'axios';
 
 export function formatPrice(price) {
     return price.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -25,3 +26,8 @@ export function formatPhoneNumber(phoneNumberString) {
 export const selectedCompany = computed(() => {
     return JSON.parse(localStorage.getItem('selectedCompany'));
 });
+
+export async function getExchangeRate() {
+    const response = await axios.get('/api/exchange-rates');
+    return response.data;
+}

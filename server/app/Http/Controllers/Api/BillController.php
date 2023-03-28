@@ -25,23 +25,11 @@ class BillController extends Controller
     public function index($id)
     {
         $company = Company::withTrashed()->findOrFail($id);
+        $bills = $company->bills()->with(['corporation', 'waybill', 'withholding']);
 
         if (request()->has('all') && request()->all == 'true') {
-            $bills = $company->bills()->with(['corporation', 'waybill', 'withholding']);
-
-            $paginateList = $bills->when(request()->has('search'), function ($query) {
-                $query->where('number', 'like', '%' . request()->search . '%')
-                    ->orWhereHas('corporation', function ($query) {
-                        $query->where('name', 'like', '%' . request()->search . '%');
-                    });
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return BillResource::collection($paginateList);
+            $paginateList = $bills->get();
         } else {
-            $bills = $company->bills()->with(['corporation', 'waybill', 'withholding']);
-
             $paginateList = $bills->when(request()->has('search'), function ($query) {
                 $query->where('number', 'like', '%' . request()->search . '%')
                     ->orWhereHas('corporation', function ($query) {
@@ -50,9 +38,8 @@ class BillController extends Controller
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return BillResource::collection($paginateList);
         }
+        return BillResource::collection($paginateList);
     }
 
     public function trash(Company $company)

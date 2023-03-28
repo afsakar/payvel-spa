@@ -55,7 +55,7 @@ const form = ref({
 });
 
 async function getWaybills() {
-    await axios.get(`/api/v1/waybills/${selectedCompany.value.id}?all=true&corporation_id=${form.value.corporation_id}`).then((res) => {
+    await axios.get(`/api/v1/waybills/${selectedCompany.value.id}?all=true&corporation_id=${form.value.corporation_id}&waybill_id=${form.value.waybill_id}`).then((res) => {
         waybillList.value = res.data.data;
     });
 }

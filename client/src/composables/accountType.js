@@ -21,21 +21,18 @@ export const useAccountTypeStore = defineStore('accountType', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getAccountTypes() {
-            await this.getToken();
             await axios.get('/api/v1/account-types').then((res) => {
                 this.accountTypes = res.data;
                 this.deletedAccountTypes = res.data.deletedAccountTypes;
             });
         },
         async getAccountType(id) {
-            await this.getToken();
             await axios.get(`/api/v1/account-types/${id}`).then((res) => {
                 this.accountType = res.data;
             });
         },
         async createAccountType(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/account-types', data)
                 .then((res) => {
@@ -54,7 +51,6 @@ export const useAccountTypeStore = defineStore('accountType', {
         },
         async updateAccountType(id, data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/account-types/${id}`, data)
                 .then((res) => {
@@ -72,7 +68,6 @@ export const useAccountTypeStore = defineStore('accountType', {
                 });
         },
         async deleteAccountType(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/account-types/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getAccountTypes();
@@ -80,7 +75,6 @@ export const useAccountTypeStore = defineStore('accountType', {
             });
         },
         async restoreAccountType(id) {
-            await this.getToken();
             await axios.post(`/api/v1/account-types/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getAccountTypes();
@@ -88,7 +82,6 @@ export const useAccountTypeStore = defineStore('accountType', {
             });
         },
         async forceDeleteAccountType(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/account-types/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getAccountTypes();

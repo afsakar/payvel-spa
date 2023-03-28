@@ -21,21 +21,18 @@ export const useTaxStore = defineStore('tax', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getTaxes() {
-            await this.getToken();
             await axios.get('/api/v1/taxes').then((res) => {
                 this.taxes = res.data;
                 this.deletedTaxes = res.data.deletedTaxes;
             });
         },
         async getTax(id) {
-            await this.getToken();
             await axios.get(`/api/v1/taxes/${id}`).then((res) => {
                 this.tax = res.data;
             });
         },
         async createTax(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/taxes', data)
                 .then((res) => {
@@ -54,7 +51,6 @@ export const useTaxStore = defineStore('tax', {
         },
         async updateTax(data, id) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/taxes/${id}`, data)
                 .then((res) => {
@@ -72,7 +68,6 @@ export const useTaxStore = defineStore('tax', {
                 });
         },
         async deleteTax(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/taxes/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getTaxes();
@@ -80,7 +75,6 @@ export const useTaxStore = defineStore('tax', {
             });
         },
         async restoreTax(id) {
-            await this.getToken();
             await axios.post(`/api/v1/taxes/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getTaxes();
@@ -88,7 +82,6 @@ export const useTaxStore = defineStore('tax', {
             });
         },
         async forceDeleteTax(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/taxes/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getTaxes();

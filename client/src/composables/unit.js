@@ -21,21 +21,18 @@ export const useUnitStore = defineStore('unit', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getUnits() {
-            await this.getToken();
             await axios.get('/api/v1/units').then((res) => {
                 this.units = res.data;
                 this.deletedUnits = res.data.deletedUnits;
             });
         },
         async getUnit(id) {
-            await this.getToken();
             await axios.get(`/api/v1/units/${id}`).then((res) => {
                 this.unit = res.data;
             });
         },
         async createUnit(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/units', data)
                 .then((res) => {
@@ -54,7 +51,6 @@ export const useUnitStore = defineStore('unit', {
         },
         async updateUnit(data, id) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/units/${id}`, data)
                 .then((res) => {
@@ -72,7 +68,6 @@ export const useUnitStore = defineStore('unit', {
                 });
         },
         async deleteUnit(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/units/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getUnits();
@@ -80,7 +75,6 @@ export const useUnitStore = defineStore('unit', {
             });
         },
         async restoreUnit(id) {
-            await this.getToken();
             await axios.post(`/api/v1/units/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getUnits();
@@ -88,7 +82,6 @@ export const useUnitStore = defineStore('unit', {
             });
         },
         async forceDeleteUnit(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/units/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getUnits();

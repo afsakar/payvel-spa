@@ -24,21 +24,18 @@ export const useWaybillStore = defineStore('waybill', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getWaybills(companyID) {
-            await this.getToken();
             await axios.get(`/api/v1/waybills/${companyID}`).then((res) => {
                 this.waybills = res.data;
                 this.deletedWaybills = res.data.deleted_waybills;
             });
         },
         async getWaybill(id) {
-            await this.getToken();
             await axios.get(`/api/v1/waybills/get-waybill/${id}`).then((res) => {
                 this.waybill = res.data;
             });
         },
         async createWaybill(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/waybills', data)
                 .then((res) => {
@@ -56,7 +53,6 @@ export const useWaybillStore = defineStore('waybill', {
         },
         async updateWaybill(id, data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/waybills/${id}`, data)
                 .then((res) => {
@@ -73,40 +69,34 @@ export const useWaybillStore = defineStore('waybill', {
                 });
         },
         async deleteWaybill(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/waybills/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.respStatus = true;
             });
         },
         async restoreWaybill(id) {
-            await this.getToken();
             await axios.post(`/api/v1/waybills/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.respStatus = true;
             });
         },
         async forceDeleteWaybill(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/waybills/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.respStatus = true;
             });
         },
         async getCorporations() {
-            await this.getToken();
             await axios.get(`/api/v1/corporations?all=true`).then((res) => {
                 this.corporations = res.data.data;
             });
         },
         async getMaterials(query = null) {
-            await this.getToken();
             await axios.get(`/api/v1/materials?all=true${query}`).then((res) => {
                 this.materials = res.data.data;
             });
         },
         async storeWaybillItems(waybillID, data) {
-            await this.getToken();
             await axios
                 .post(`/api/v1/waybills/${waybillID}/items`, data)
                 .then((res) => {

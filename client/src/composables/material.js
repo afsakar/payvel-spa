@@ -27,21 +27,18 @@ export const useMaterialStore = defineStore('material', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getMaterials() {
-            await this.getToken();
             await axios.get('/api/v1/materials').then((res) => {
                 this.materials = res.data;
                 this.deletedMaterials = res.data.deletedMaterials;
             });
         },
         async getMaterial(id) {
-            await this.getToken();
             await axios.get(`/api/v1/materials/${id}`).then((res) => {
                 this.material = res.data;
             });
         },
         async createMaterial(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/materials', data)
                 .then((res) => {
@@ -60,7 +57,6 @@ export const useMaterialStore = defineStore('material', {
         },
         async updateMaterial(id, data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/materials/${id}`, data)
                 .then((res) => {
@@ -78,7 +74,6 @@ export const useMaterialStore = defineStore('material', {
                 });
         },
         async deleteMaterial(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/materials/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getMaterials();
@@ -86,7 +81,6 @@ export const useMaterialStore = defineStore('material', {
             });
         },
         async restoreMaterial(id) {
-            await this.getToken();
             await axios.post(`/api/v1/materials/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getMaterials();
@@ -94,7 +88,6 @@ export const useMaterialStore = defineStore('material', {
             });
         },
         async forceDeleteMaterial(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/materials/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getMaterials();
@@ -102,19 +95,16 @@ export const useMaterialStore = defineStore('material', {
             });
         },
         async getCurrencies() {
-            await this.getToken();
             await axios.get('/api/v1/currencies?all=true').then((res) => {
                 this.currencies = res.data.data;
             });
         },
         async getUnits() {
-            await this.getToken();
             await axios.get('/api/v1/units?all=true').then((res) => {
                 this.units = res.data.data;
             });
         },
         async getTaxes() {
-            await this.getToken();
             await axios.get('/api/v1/taxes?all=true').then((res) => {
                 this.taxes = res.data.data;
             });

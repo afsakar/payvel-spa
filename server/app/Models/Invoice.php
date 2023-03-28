@@ -79,6 +79,11 @@ class Invoice extends Model
         return $this->waybill->items;
     }
 
+    public function revenues()
+    {
+        return $this->belongsToMany(Revenue::class, 'invoice_revenue', 'invoice_id', 'revenue_id');
+    }
+
     protected static function booted(): void
     {
         static::addGlobalScope(new CompanyScope);

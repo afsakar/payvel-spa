@@ -10,6 +10,7 @@ use App\Models\Company;
 use App\Models\Waybill;
 use App\Models\WaybillItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -25,16 +26,15 @@ class WaybillController extends Controller
         $company = Company::withTrashed()->findOrFail($id);
 
         if (request()->has('all') && request()->all == 'true') {
-            $waybills = $company->waybills()->with('corporation')->whereDoesntHave('bills')->whereDoesntHave('invoices');
+            if (request()->has('corporation_id') && request()->has('waybill_id')) {
+                $waybills = $company->waybills()->with('corporation')->where('id', request()->waybill_id);
+                $otherWaybills = $company->waybills()->with('corporation')->where('corporation_id', request()->corporation_id)->whereDoesntHave('bills')->whereDoesntHave('invoices')->where('id', '!=', request()->waybill_id);
 
-            $paginateList = $waybills->when(request()->has('search'), function ($query) {
-                $query->where('number', 'like', '%' . request()->search . '%')
-                    ->orWhereHas('corporation', function ($query) {
-                        $query->where('name', 'like', '%' . request()->search . '%');
-                    });
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
+                $waybills = $waybills->union($otherWaybills);
+            } else {
+                $waybills = $company->waybills()->with('corporation')->whereDoesntHave('bills')->whereDoesntHave('invoices');
+            }
+            $paginateList = $waybills->get();
 
             return WaybillResource::collection($paginateList);
         } else {

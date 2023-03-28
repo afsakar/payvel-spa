@@ -25,22 +25,11 @@ class InvoiceController extends Controller
     public function index($id)
     {
         $company = Company::withTrashed()->findOrFail($id);
+        $invoices = $company->invoices()->with(['corporation', 'waybill', 'withholding', 'revenues']);
 
         if (request()->has('all') && request()->all == 'true') {
-            $invoices = $company->invoices()->with(['corporation', 'waybill', 'withholding']);
-
-            $paginateList = $invoices->when(request()->has('search'), function ($query) {
-                $query->where('number', 'like', '%' . request()->search . '%')
-                    ->orWhereHas('corporation', function ($query) {
-                        $query->where('name', 'like', '%' . request()->search . '%');
-                    });
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return InvoiceResource::collection($paginateList);
+            $paginateList = $invoices->all();
         } else {
-            $invoices = $company->invoices()->with(['corporation', 'waybill', 'withholding']);
 
             $paginateList = $invoices->when(request()->has('search'), function ($query) {
                 $query->where('number', 'like', '%' . request()->search . '%')
@@ -50,14 +39,14 @@ class InvoiceController extends Controller
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return InvoiceResource::collection($paginateList);
         }
+
+        return InvoiceResource::collection($paginateList);
     }
 
     public function trash(Company $company)
     {
-        $invoices = $company->invoices()->onlyTrashed()->with(['corporation', 'waybill', 'withholding']);
+        $invoices = $company->invoices()->onlyTrashed()->with(['corporation', 'waybill', 'withholding', 'revenues']);
 
         $paginateList = $invoices->when(request()->has('search'), function ($query) {
             $query->where('number', 'like', '%' . request()->search . '%');
@@ -118,7 +107,7 @@ class InvoiceController extends Controller
      */
     public function show($invoice)
     {
-        $invoice = Invoice::with(['company', 'corporation', 'waybill', 'withholding'])->where('id', $invoice)->first();
+        $invoice = Invoice::with(['company', 'corporation', 'waybill', 'withholding', 'revenues'])->where('id', $invoice)->first();
         return new InvoiceResource($invoice);
     }
 

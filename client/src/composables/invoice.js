@@ -27,21 +27,18 @@ export const useInvoiceStore = defineStore('invoice', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getInvoices(companyID) {
-            await this.getToken();
             await axios.get(`/api/v1/invoices/${companyID}`).then((res) => {
                 this.invoices = res.data;
                 this.deletedInvoices = res.data.deleted_invoices;
             });
         },
         async getInvoice(id) {
-            await this.getToken();
             await axios.get(`/api/v1/invoices/get-invoice/${id}`).then((res) => {
                 this.invoice = res.data;
             });
         },
         async createInvoice(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/invoices', data)
                 .then((res) => {
@@ -59,7 +56,6 @@ export const useInvoiceStore = defineStore('invoice', {
         },
         async updateInvoice(id, data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/invoices/${id}`, data)
                 .then((res) => {
@@ -76,52 +72,44 @@ export const useInvoiceStore = defineStore('invoice', {
                 });
         },
         async deleteInvoice(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/invoices/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.respStatus = true;
             });
         },
         async restoreInvoice(id) {
-            await this.getToken();
             await axios.post(`/api/v1/invoices/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.respStatus = true;
             });
         },
         async forceDeleteInvoice(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/invoices/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.respStatus = true;
             });
         },
         async getCorporations() {
-            await this.getToken();
             await axios.get(`/api/v1/corporations?all=true`).then((res) => {
                 this.corporations = res.data.data;
             });
         },
         async getWithholdings() {
-            await this.getToken();
             await axios.get(`/api/v1/withholdings?all=true`).then((res) => {
                 this.withholdings = res.data.data;
             });
         },
         async getWaybills() {
-            await this.getToken();
             await axios.get(`/api/v1/waybills?all=true`).then((res) => {
                 this.waybills = res.data.data;
             });
         },
         async getMaterials(query = null) {
-            await this.getToken();
             await axios.get(`/api/v1/materials?all=true${query}`).then((res) => {
                 this.materials = res.data.data;
             });
         },
         async storeInvoiceItems(invoiceID, data) {
-            await this.getToken();
             await axios
                 .post(`/api/v1/invoices/${invoiceID}/items`, data)
                 .then((res) => {

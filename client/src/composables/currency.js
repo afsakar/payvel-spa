@@ -21,21 +21,18 @@ export const useCurrencyStore = defineStore('currency', {
             await axios.get('/sanctum/csrf-cookie');
         },
         async getCurrencies() {
-            await this.getToken();
             await axios.get('/api/v1/currencies').then((res) => {
                 this.currencies = res.data;
                 this.deletedCurrencies = res.data.deletedCurrencies;
             });
         },
         async getCurrency(id) {
-            await this.getToken();
             await axios.get(`/api/v1/currencies/${id}`).then((res) => {
                 this.currency = res.data;
             });
         },
         async createCurrency(data) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post('/api/v1/currencies', data)
                 .then((res) => {
@@ -54,7 +51,6 @@ export const useCurrencyStore = defineStore('currency', {
         },
         async updateCurrency(data, id) {
             this.formErrors = [];
-            await this.getToken();
             await axios
                 .post(`/api/v1/currencies/${id}`, data)
                 .then((res) => {
@@ -72,7 +68,6 @@ export const useCurrencyStore = defineStore('currency', {
                 });
         },
         async deleteCurrency(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/currencies/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCurrencies();
@@ -80,7 +75,6 @@ export const useCurrencyStore = defineStore('currency', {
             });
         },
         async restoreCurrency(id) {
-            await this.getToken();
             await axios.post(`/api/v1/currencies/restore/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCurrencies();
@@ -88,7 +82,6 @@ export const useCurrencyStore = defineStore('currency', {
             });
         },
         async forceDeleteCurrency(id) {
-            await this.getToken();
             await axios.delete(`/api/v1/currencies/force-delete/${id}`).then((res) => {
                 this.formSuccess = res.data.message;
                 this.getCurrencies();

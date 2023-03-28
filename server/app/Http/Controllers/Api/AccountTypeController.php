@@ -20,22 +20,16 @@ class AccountTypeController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
+            $list = AccountType::all();
+        } else {
             $list = AccountType::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return AccountTypeResource::collection($list);
-        } else {
-            $paginateList = AccountType::when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%');
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return AccountTypeResource::collection($paginateList);
         }
+
+        return AccountTypeResource::collection($list);
     }
 
     public function trash()

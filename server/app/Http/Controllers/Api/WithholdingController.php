@@ -21,22 +21,15 @@ class WithholdingController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
-            $withholdings = Withholding::when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%');
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return WithholdingResource::collection($withholdings);
+            $withholdings = Withholding::all();
         } else {
             $withholdings = Withholding::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return WithholdingResource::collection($withholdings);
         }
+        return WithholdingResource::collection($withholdings);
     }
 
     public function trash()

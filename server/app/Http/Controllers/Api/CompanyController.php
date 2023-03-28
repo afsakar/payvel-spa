@@ -24,22 +24,15 @@ class CompanyController extends Controller
     public function index()
     {
         if (request()->has('all') && request()->all == 'true') {
-            $companies = Company::when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%');
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return CompanyResource::collection($companies);
+            $companies = Company::all();
         } else {
             $companies = Company::when(request()->has('search'), function ($query) {
                 $query->where('name', 'like', '%' . request()->search . '%');
             })->when(request()->has('sort'), function ($query) {
                 $query->orderBy(request()->order, request()->sort);
             })->fastPaginate(5);
-
-            return CompanyResource::collection($companies);
         }
+        return CompanyResource::collection($companies);
     }
 
     public function trash()

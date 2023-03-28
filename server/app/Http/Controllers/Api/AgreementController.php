@@ -21,18 +21,7 @@ class AgreementController extends Controller
     public function index(Company $company)
     {
         if (request()->has('all') && request()->all == 'true') {
-            $agreements = $company->agreements()->with('corporation');
-
-            $paginateList = $agreements->when(request()->has('search'), function ($query) {
-                $query->where('name', 'like', '%' . request()->search . '%')
-                    ->orWhereHas('corporation', function ($query) {
-                        $query->where('name', 'like', '%' . request()->search . '%');
-                    });
-            })->when(request()->has('sort'), function ($query) {
-                $query->orderBy(request()->order, request()->sort);
-            })->get();
-
-            return AgreementResource::collection($paginateList);
+            $paginateList = $company->agreements()->get();
         } else {
             $agreements = $company->agreements()->with('corporation');
 
